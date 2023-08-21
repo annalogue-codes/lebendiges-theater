@@ -1,0 +1,22 @@
+{
+	"name": "Lebendiges Theater",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"start": "vite --port 8000 --logLevel info",
+		"build": "tsc && vite build",
+		"preview": "vite preview --port 4173 --logLevel info"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.40.0",
+		"@typescript-eslint/parser": "^5.40.0",
+		"@vitejs/plugin-basic-ssl": "^1.0.1",
+		"eslint": "^8.25.0",
+		"typescript": "^4.6.4",
+		"vite": "^3.1.0"
+	},
+	"dependencies": {
+		"phaser": "^3.60.0"
+	}
+}
