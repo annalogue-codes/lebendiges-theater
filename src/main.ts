@@ -15,18 +15,22 @@
 
 import Phaser from 'phaser'
 
-import { CONFIG } from './Constants'
-import Loader from './scenes/Loader'
-import Snooze from './scenes/Snooze'
-import CozyRoom from './scenes/CozyRoom'
+import { game } from './constants'
+import Loader from './scenes/loader'
+import Start from './scenes/start'
+import Fassade from './scenes/fassade'
+import Entrance from './scenes/entrance'
+import Foyer from './scenes/foyer'
+import Piano from './scenes/piano'
+import Snooze from './scenes/snooze'
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'app',
 	fullscreenTarget: 'app',
 	title: 'Lebendiges Theater',
-	width: CONFIG.width,
-	height: CONFIG.height,
+	width: game.width,
+	height: game.height,
 	backgroundColor: '#2d2d2d',
 	scale: {
 		parent: 'app',
@@ -40,11 +44,16 @@ const config: Phaser.Types.Core.GameConfig = {
 	physics: {
 		default: 'arcade',
 		arcade: {
-			gravity: { y: CONFIG.gravity },
+			gravity: { y: game.gravity },
 			debug: false,
 		},
 	},
-	scene: [Loader, CozyRoom, Snooze],
+	dom: {
+		createContainer: true
+	},
+	scene: [Loader, Start, Fassade, Entrance, Foyer, Piano, Snooze],
 }
 
-export default new Phaser.Game(config)
+const theGame = new Phaser.Game(config)
+
+export default theGame

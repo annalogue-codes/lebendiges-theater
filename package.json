@@ -1,5 +1,5 @@
 {
-	"name": "Lebendiges Theater",
+	"name": "Atze & Du",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -9,6 +9,7 @@
 		"preview": "vite preview --port 4173 --logLevel info"
 	},
 	"devDependencies": {
+		"@types/lodash": "^4.14.198",
 		"@typescript-eslint/eslint-plugin": "^5.40.0",
 		"@typescript-eslint/parser": "^5.40.0",
 		"@vitejs/plugin-basic-ssl": "^1.0.1",
@@ -17,6 +18,7 @@
 		"vite": "^3.1.0"
 	},
 	"dependencies": {
-		"phaser": "^3.60.0"
+		"lodash": "^4.17.15",
+		"phaser": "3.60.0"
 	}
 }
