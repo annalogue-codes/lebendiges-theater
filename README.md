@@ -8,8 +8,8 @@
 
 <p align="center">
   <sub>
-    Made with ❤︎ by <a href="https://annalogue.codes">Annalogue Codes</a></br>
-    for the <a href="https://atzeberlin.de">ATZE Musiktheater</a>
+	Made with ❤︎ by <a href="https://annalogue.codes">Annalogue Codes</a></br>
+	for the <a href="https://atzeberlin.de">ATZE Musiktheater</a>
   </sub>
 </p>
 
@@ -51,7 +51,7 @@ npm install
 Start development server:
 
 ```
-npm run start
+npm run dev
 ```
 
 To create a production build:
@@ -65,26 +65,26 @@ Production files will be placed in the `dist` folder. Then upload those files to
 ## Project Structure
 
 ```
-    .
-    ├── dist
-    ├── node_modules
-    ├── public
-    │   ├── images
-    │   │   ├── icon.png
-    │   ├── ...
-    ├── src
-    │   ├── scenes
-    │   │   ├── Loading.ts
-    │   │   ├── Entrance.ts
-    │   ├── ...
-    │   ├── main.ts
+	.
+	├── dist
+	├── node_modules
+	├── public
+	│   ├── images
+	│   │   ├── icon.png
+	│   ├── ...
+	├── src
+	│   ├── scenes
+	│   │   ├── Loading.ts
+	│   │   ├── Entrance.ts
+	│   ├── ...
+	│   ├── main.ts
 	├── index.html
 	├── manifest.json
-    ├── package.json
-    ├── tsconfig.json
-    ├── vite.config.ts
-    ├── LICENSE.txt
-    ├── README.md
+	├── package.json
+	├── tsconfig.json
+	├── vite.config.ts
+	├── LICENSE.txt
+	├── README.md
 ```
 
 TypeScript files are intended for the `src` folder. `main.ts` is the entry point referenced by `index.html`.
@@ -98,13 +98,13 @@ Any static assets like images or audio files should be placed in the `public` fo
 Example `public` structure:
 
 ```
-    public
-    ├── images
-    │   ├── my-image.png
-    ├── music
-    │   ├── ...
-    ├── sfx
-    │   ├── ...
+	public
+	├── images
+	│   ├── my-image.png
+	├── music
+	│   ├── ...
+	├── sfx
+	│   ├── ...
 ```
 
 They can then be loaded by Phaser with `this.image.load('my-image', 'images/my-image.png')`.
