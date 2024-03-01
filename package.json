@@ -1,0 +1,22 @@
+{
+	"name": "Atze & Du",
+	"private": true,
+	"version": "0.0.2",
+	"type": "module",
+	"scripts": {
+		"dev": "vite --logLevel info",
+		"build": "tsc && vite build",
+		"preview": "vite preview --logLevel info"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-basic-ssl": "",
+		"@typescript-eslint/eslint-plugin": "^5.40.0",
+		"@typescript-eslint/parser": "^5.40.0",
+		"eslint": "^8.25.0",
+		"typescript": "^4.6.4",
+		"vite": "^3.1.0"
+	},
+	"dependencies": {
+		"phaser": "3.60.0"
+	}
+}

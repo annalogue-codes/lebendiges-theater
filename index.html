@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+	<link rel="icon" type="image/png" href="favicon.png">
+
+	<title>Atze &amp; Du</title>
+
+	<meta name="author" content="Annalogue Codes">
+	<meta name="description" content="Erlebe das ATZE Musiktheater auf spielerische Weise">
+	<meta name="keywords" content="Game, Kids, Children, Theater, Interactive">
+
+	<meta property="og:title" content="Atze & Du">
+	<meta property="og:description" content="Erlebe das ATZE Musiktheater auf spielerische Weise">
+	<meta property="og:image" content="images/launch.png">
+	<meta property="og:type" content="webgame">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="Atze & Du">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="apple-touch-startup-image" href="icon.png">
+	<link rel="apple-touch-icon" href="icon.png">
+
+	<link rel="manifest" href="manifest.json">
+
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			background: #000;
+		}
+		html, body, #app {
+			margin: 0;
+			padding: 0;
+			touch-action: none;
+		}
+	</style>
+	<script>
+		document.addEventListener("gesturestart", function (e) {
+			e.preventDefault()
+			document.body.style.zoom = 0.99
+		})
+
+		document.addEventListener("gesturechange", function (e) {
+			e.preventDefault()
+			document.body.style.zoom = 0.99
+		})
+		document.addEventListener("gestureend", function (e) {
+			e.preventDefault()
+			document.body.style.zoom = 1
+		})
+	</script>
+</head>
+
+<body>
+	<div id="app"></div>
+	<script type="module" src="src/main.ts"></script>
+</body>
+
+</html>

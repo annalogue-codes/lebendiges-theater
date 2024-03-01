@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Noto Sans Symbols2';
+    src: url('NotoSansSymbols2-Regular.eot');
+    src: local('Noto Sans Symbols2 Regular'), local('NotoSansSymbols2-Regular'),
+        url('NotoSansSymbols2-Regular.eot?#iefix') format('embedded-opentype'),
+        url('NotoSansSymbols2-Regular.woff2') format('woff2'),
+        url('NotoSansSymbols2-Regular.woff') format('woff'),
+        url('NotoSansSymbols2-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
