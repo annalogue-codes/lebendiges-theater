@@ -1,5 +1,5 @@
 <p align="center">
-  <img width=60% src="public/images/cloudySofa.jpg">
+  <img width=60% src="./cloudySofa.jpg">
 </p>
 
 <p align="center">
