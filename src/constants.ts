@@ -246,6 +246,7 @@ const game: Up.Game = {
 			ATZETALKING: { key: `foyer/${WIDTH}x${HEIGHT}/atzeTalking.png`, width: 40.6, height: 35.5 },
 			SNORLAX: { key: `foyer/${WIDTH}x${HEIGHT}/snorlax.png`, width: 75, height: 108 },
 			CHOCO: { key: `foyer/${WIDTH}x${HEIGHT}/choco.png`, width: 25, height: 38 },
+			// CASHIER: { key: `foyer/${WIDTH}x${HEIGHT}/cashier.png`, width: 25, height: 38 }
 		},
 		PIANO: {
 			LINEWOBBLE: { key: `piano/${WIDTH}x${HEIGHT}/lineWobble.png`, width: 40.5, height: 450 },

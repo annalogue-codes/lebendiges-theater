@@ -133,9 +133,9 @@ function go ( scene: Phaser.Scene ): void {
 	}))
 
 	const knobProgram = scene.add.sprite( 604 * s,  91 * s, game.sprites.BACKSTAGE.KNOBPROGRAM.key )
-	const knobYellow1 = scene.add.sprite( 567 * s, 236 * s, game.sprites.BACKSTAGE.KNOBYELLOW1.key )
-	const knobYellow2 = scene.add.sprite( 604 * s, 236 * s, game.sprites.BACKSTAGE.KNOBYELLOW2.key )
-	const knobRed     = scene.add.sprite( 642 * s, 236 * s, game.sprites.BACKSTAGE.KNOBRED.key     )
+	const knobYellow1 = scene.add.sprite( 567 * s, 240 * s, game.sprites.BACKSTAGE.KNOBYELLOW1.key )
+	const knobYellow2 = scene.add.sprite( 604 * s, 240 * s, game.sprites.BACKSTAGE.KNOBYELLOW2.key )
+	const knobRed     = scene.add.sprite( 642 * s, 240 * s, game.sprites.BACKSTAGE.KNOBRED.key     )
 	const knobs = [ knobProgram, knobYellow1, knobYellow2, knobRed ]
 	knobs.forEach( knob => knob.setDepth( 25 ).setInteractive() )
 
