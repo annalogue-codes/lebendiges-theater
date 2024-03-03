@@ -104,19 +104,20 @@ export default class Init extends Phaser.Scene {
 		this.scene.run( game.scenes.LOADER )
 	}
 
-// 	update() {//
+	// update() {//
 // 		if (debug) {
 // 			this.text?.setText(`
 // Actual FPS: ${this.game.loop.actualFps}
 // 			`)
 // 		}
-// 	}
+	// }
 }
 
 const handleFocus = (scene: Phaser.Scene) => {
 	// Handle loosing focus properly on IOS.
 	// See: https://blog.ourcade.co/posts/2020/phaser-3-web-audio-best-practices-games/
 	scene.sound.pauseOnBlur = true
+
 	scene.game.events.on(Phaser.Core.Events.BLUR, () => {
 		handleLoseFocus(scene)
 	})
@@ -136,7 +137,7 @@ const handleFocus = (scene: Phaser.Scene) => {
 const PREVIOUSSCENES = 'previousScenes'
 
 const handleLoseFocus = (scene: Phaser.Scene) => {
-	if (scene.scene.isActive(game.scenes.SNOOZE)) {
+	if ( getState().paused ) {
 		return
 	}
 	addState({ paused: true })
@@ -152,7 +153,6 @@ const handleLoseFocus = (scene: Phaser.Scene) => {
 }
 
 const handleGainFocus = (scene: Phaser.Scene) => {
-	addState({ paused: false })
 	scene.scene.stop(game.scenes.SNOOZE)
 
 	const previousScenes = scene.registry.get( PREVIOUSSCENES )
@@ -160,6 +160,8 @@ const handleGainFocus = (scene: Phaser.Scene) => {
 
 	// scene.sound.mute = false
 	// scene.sound.setVolume( 1 )
+
+	addState({ paused: false })
 }
 
 const setFullscreenTrigger = ( scene: Phaser.Scene ) => {

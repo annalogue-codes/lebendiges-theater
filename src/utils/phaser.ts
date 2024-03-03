@@ -97,9 +97,9 @@ const cacheAvailable = 'caches' in self
 log( `Caches available: ${cacheAvailable}` )
 
 async function openCache (p: {
-	nameOfGame: string,
+	nameOfCache: string,
 }): Promise<Cache> {
-	const cache = await caches.open( `${p.nameOfGame}-cache` )
+	const cache = await caches.open( `${p.nameOfCache}-cache` )
 	return cache
 }
 

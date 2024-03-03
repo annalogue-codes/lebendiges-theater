@@ -22,7 +22,8 @@ import * as Ug from './utils/general'
 import * as Up from './utils/phaser'
 import * as Set from './utils/set'
 
-		// ascii letters only
+// ascii letters only
+const VERSION = '1.0.1'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
 const WIDTH =  Ug.onMobileDevice() ? 800 : 1600
@@ -30,9 +31,11 @@ const HEIGHT = Ug.onMobileDevice() ? 450 : 900
 const SCALE =  Ug.onMobileDevice() ? 1 : 2
 
 // // delete cache
-await caches.delete( `${NAMEOFGAME}-cache` )
 
-const cache = await Up.openCache({ nameOfGame: NAMEOFGAME })
+await caches.delete( `${NAMEOFGAME}-cache` )
+await caches.delete( `${NAMEOFGAME}-1.0.0-cache` )
+
+const cache = await Up.openCache({ nameOfCache: `${NAMEOFGAME}-${VERSION}` })
 
 
 type State = Up.MinimalState & {
@@ -119,6 +122,16 @@ const game: Up.Game = {
 		OTHER: {
 			CIRCLE: { key: `other/${WIDTH}x${HEIGHT}/glowCircle_small.png` },
 		},
+		BACKSTAGE: {
+			BACKGROUND:  { key: `backstage/${WIDTH}x${HEIGHT}/television.png` },
+		},
+		ENTRANCE: {
+			BACKGROUND: { key: `entrance/${WIDTH}x${HEIGHT}/background.png` },
+			DOORLEFT: { key: `entrance/${WIDTH}x${HEIGHT}/doorLeft.png` },
+			DOORRIGHT: { key: `entrance/${WIDTH}x${HEIGHT}/doorRight.png` },
+			INNER: { key: `entrance/${WIDTH}x${HEIGHT}/inner.png` },
+			RAINDROP: { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
+		},
 		FASSADE: {
 			BACKGROUND: { key: `fassade/${WIDTH}x${HEIGHT}/background.png` },
 			DOORLEFT: { key: `fassade/${WIDTH}x${HEIGHT}/doorLeft.png` },
@@ -126,13 +139,6 @@ const game: Up.Game = {
 			DOORINNER: { key: `fassade/${WIDTH}x${HEIGHT}/doorInner.png` },
 			PILLAR1: { key: `fassade/${WIDTH}x${HEIGHT}/pillar1.png` },
 			PILLAR2: { key: `fassade/${WIDTH}x${HEIGHT}/pillar2.png` },
-			RAINDROP: { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
-		},
-		ENTRANCE: {
-			BACKGROUND: { key: `entrance/${WIDTH}x${HEIGHT}/background.png` },
-			DOORLEFT: { key: `entrance/${WIDTH}x${HEIGHT}/doorLeft.png` },
-			DOORRIGHT: { key: `entrance/${WIDTH}x${HEIGHT}/doorRight.png` },
-			INNER: { key: `entrance/${WIDTH}x${HEIGHT}/inner.png` },
 			RAINDROP: { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
 		},
 		FOYER: {
@@ -143,28 +149,11 @@ const game: Up.Game = {
 			RAILING: { key: `hallway/${WIDTH}x${HEIGHT}/railing.png` },
 			RAILINGSTAGE: { key: `hallway/${WIDTH}x${HEIGHT}/railingstage.png` },
 		},
-		STAGEDOOR: {
-			BACKGROUND: { key: `stagedoor/${WIDTH}x${HEIGHT}/background.jpg` },
-		},
-		STAGE: {
-			BACKGROUND: { key: `stage/${WIDTH}x${HEIGHT}/background.jpg` },
-			// BACKGROUND: { key: `stage/${WIDTH}x${HEIGHT}/6-Buhne.small.png` },
-			ALBIREA: { key: `stage/${WIDTH}x${HEIGHT}/albirea.png` },
-			BACH: { key: `stage/${WIDTH}x${HEIGHT}/bach.png` },
-			BEAR: { key: `stage/${WIDTH}x${HEIGHT}/bear.png` },
-			ENTLEIN: { key: `stage/${WIDTH}x${HEIGHT}/entlein.png` },
-			HAUPTMANN: { key: `stage/${WIDTH}x${HEIGHT}/hauptmann.png` },
-			NEINHORN: { key: `stage/${WIDTH}x${HEIGHT}/neinhorn.png` },
-			RONJA: { key: `stage/${WIDTH}x${HEIGHT}/ronja.png` },
-			RONJASTANDING: { key: `stage/${WIDTH}x${HEIGHT}/ronjastanding.png` },
-			SAMS: { key: `stage/${WIDTH}x${HEIGHT}/sams.png` },
-			QUESTION: { key: `dialogue/${WIDTH}x${HEIGHT}/question.png` },
-			EXCLAMATION: { key: `dialogue/${WIDTH}x${HEIGHT}/exclamation.png` },
-			FUNNY: { key: `dialogue/${WIDTH}x${HEIGHT}/funny.png` },
-			BYE: { key: `dialogue/${WIDTH}x${HEIGHT}/bye.png` },
-		},
-		BACKSTAGE: {
-			BACKGROUND: { key: `backstage/${WIDTH}x${HEIGHT}/television.png` },
+		PAINT: {
+			BACKGROUND: { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
+			BRUSH1: { key: `paint/${WIDTH}x${HEIGHT}/brush1.png` },
+			BRUSH2: { key: `paint/${WIDTH}x${HEIGHT}/brush2.png` },
+			BRUSH3: { key: `paint/${WIDTH}x${HEIGHT}/brush3.png` },
 		},
 		PIANO: {
 			BACKGROUND: { key: `piano/${WIDTH}x${HEIGHT}/background.jpg` },
@@ -178,21 +167,6 @@ const game: Up.Game = {
 			LINED: { key: `piano/${WIDTH}x${HEIGHT}/lineD.png` },
 			LINEE: { key: `piano/${WIDTH}x${HEIGHT}/lineE.png` },
 			LINEF: { key: `piano/${WIDTH}x${HEIGHT}/lineF.png` },
-		},
-		SHOWROOM: {
-			BACKGROUND: { key: `showroom/${WIDTH}x${HEIGHT}/background.jpg` },
-			// PODIUMVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal01.jpg` },
-			// PODIUMVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal02.jpg` },
-			// STIMMEDERZUKUNFTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/stimmeDerZukunftVertikal01.jpg` },
-			// STIMMEDERZUKUNFTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/stimmeDerZukunftVertikal02.jpg` },
-			// FAMILIENNACHTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal01.jpg` },
-			// FAMILIENNACHTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal02.jpg` },
-		},
-		PAINT: {
-			BACKGROUND: { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
-			BRUSH1: { key: `paint/${WIDTH}x${HEIGHT}/brush1.png` },
-			BRUSH2: { key: `paint/${WIDTH}x${HEIGHT}/brush2.png` },
-			BRUSH3: { key: `paint/${WIDTH}x${HEIGHT}/brush3.png` },
 		},
 		// PRESENTATION: {
 		// 	BACKGROUND: { key: `presentation/${WIDTH}x${HEIGHT}/background.jpg` },
@@ -213,6 +187,35 @@ const game: Up.Game = {
 		// 	FAMILIENNACHTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal01.jpg` },
 		// 	FAMILIENNACHTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal02.jpg` },
 		// },
+		SHOWROOM: {
+			BACKGROUND: { key: `showroom/${WIDTH}x${HEIGHT}/background.jpg` },
+			// PODIUMVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal01.jpg` },
+			// PODIUMVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal02.jpg` },
+			// STIMMEDERZUKUNFTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/stimmeDerZukunftVertikal01.jpg` },
+			// STIMMEDERZUKUNFTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/stimmeDerZukunftVertikal02.jpg` },
+			// FAMILIENNACHTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal01.jpg` },
+			// FAMILIENNACHTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal02.jpg` },
+		},
+		STAGE: {
+			BACKGROUND: { key: `stage/${WIDTH}x${HEIGHT}/background.jpg` },
+			// BACKGROUND: { key: `stage/${WIDTH}x${HEIGHT}/6-Buhne.small.png` },
+			ALBIREA: { key: `stage/${WIDTH}x${HEIGHT}/albirea.png` },
+			BACH: { key: `stage/${WIDTH}x${HEIGHT}/bach.png` },
+			BEAR: { key: `stage/${WIDTH}x${HEIGHT}/bear.png` },
+			ENTLEIN: { key: `stage/${WIDTH}x${HEIGHT}/entlein.png` },
+			HAUPTMANN: { key: `stage/${WIDTH}x${HEIGHT}/hauptmann.png` },
+			NEINHORN: { key: `stage/${WIDTH}x${HEIGHT}/neinhorn.png` },
+			RONJA: { key: `stage/${WIDTH}x${HEIGHT}/ronja.png` },
+			RONJASTANDING: { key: `stage/${WIDTH}x${HEIGHT}/ronjastanding.png` },
+			SAMS: { key: `stage/${WIDTH}x${HEIGHT}/sams.png` },
+			QUESTION: { key: `dialogue/${WIDTH}x${HEIGHT}/question.png` },
+			EXCLAMATION: { key: `dialogue/${WIDTH}x${HEIGHT}/exclamation.png` },
+			FUNNY: { key: `dialogue/${WIDTH}x${HEIGHT}/funny.png` },
+			BYE: { key: `dialogue/${WIDTH}x${HEIGHT}/bye.png` },
+		},
+		STAGEDOOR: {
+			BACKGROUND: { key: `stagedoor/${WIDTH}x${HEIGHT}/background.jpg` },
+		},
 		WIMMELBILD: {
 			BERLIN: { key: `wimmelbild/${WIDTH}x${HEIGHT}/berlin.jpg` },
 			LENSPLUS: { key: `wimmelbild/${WIDTH}x${HEIGHT}/lensplus.png` },
@@ -220,6 +223,12 @@ const game: Up.Game = {
 		},
 	},
 	sprites: SCALE === 1 ? {
+		BACKSTAGE: {
+			KNOBPROGRAM: { key: `backstage/${WIDTH}x${HEIGHT}/knob-program.png`, width: 78, height: 76 },
+			KNOBRED:     { key: `backstage/${WIDTH}x${HEIGHT}/knob-red.png`    , width: 34, height: 26 },
+			KNOBYELLOW1: { key: `backstage/${WIDTH}x${HEIGHT}/knob-yellow1.png`, width: 34, height: 26 },
+			KNOBYELLOW2: { key: `backstage/${WIDTH}x${HEIGHT}/knob-yellow2.png`, width: 34, height: 26 },
+		},
 		ENTRANCE: {
 			WOMANINPOSTER: { key: `entrance/${WIDTH}x${HEIGHT}/womanInPoster.png`, width: 62.5, height: 73 },
 		},
@@ -274,6 +283,12 @@ const game: Up.Game = {
 			CATSLEEPING: { key: `cat/${WIDTH}x${HEIGHT}/catSleeping.png`, width: 92.75, height: 63 },
 		}
 	} : {
+		BACKSTAGE: {
+			KNOBPROGRAM: { key: `backstage/${WIDTH}x${HEIGHT}/knob-program.png`, width: 156, height: 152 },
+			KNOBRED:     { key: `backstage/${WIDTH}x${HEIGHT}/knob-red.png`    , width: 68, height: 52 },
+			KNOBYELLOW1: { key: `backstage/${WIDTH}x${HEIGHT}/knob-yellow1.png`, width: 68, height: 52 },
+			KNOBYELLOW2: { key: `backstage/${WIDTH}x${HEIGHT}/knob-yellow2.png`, width: 68, height: 52 },
+		},
 		ENTRANCE: {
 			WOMANINPOSTER: { key: `entrance/${WIDTH}x${HEIGHT}/womanInPoster.png`, width: 125, height: 145 },
 		},
@@ -344,7 +359,9 @@ const game: Up.Game = {
 	},
 	sounds: {
 		BACKSTAGE: {
-			SWITCHLARGE: { key: 'backstage/switchLarge.mp3', volume: 1 },
+			SWITCHDOUBLE: { key: 'backstage/switchDouble.mp3', volume: 1 },
+			SWITCHLARGE:  { key: 'backstage/switchLarge.mp3' , volume: 1 },
+			SWITCHSMALL:  { key: 'backstage/switchSmall.mp3' , volume: 1 },
 		},
 		ENTRANCE: {
 			WOMANINPOSTER: { key: 'entrance/womanInPoster.mp3', volume: 0.8 },
