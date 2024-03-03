@@ -98,8 +98,10 @@ function go ( scene: Phaser.Scene ): void {
 	})
 	choco.play( 'foyerchoco' )
 
-	// const cashier = scene.add.sprite( 662 * s, 170 * s, game.sprites.FOYER.CASHIER.key )
 
+	if ( Set.toArray( getState().peopleFound ).length > 2 ) {
+		const cashier = scene.add.image( 695 * s, 253 * s, game.images.FOYER.CASHIER.key )
+	}
 
 
 	const cat = Cat.newCat( scene, 615 * s, 402 * s, 1 )

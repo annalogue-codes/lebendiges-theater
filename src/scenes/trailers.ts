@@ -79,8 +79,9 @@ function go ( scene: Phaser.Scene ): void {
 	}
 </style>
 <iframe id="atzeYoutube" width="${scale * 560 * s}" height="${scale * 315 * s}" src="https://www.youtube.com/embed/videoseries?si=zevT2VQLMsEx-fSC&amp;list=PLySC_LwdfWwETeMuTrM6rr0iTKeaU-Pzi&amp;autoplay=1&amp;mute=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; left: ${83 * s}px; top: ${42 * s}px"></iframe>
-<div class="exit" style="position: absolute; z-index: 10; left: 0; top: 0; width: ${60 * s}px; height: ${h}px; background: transparent;"></div>
-<div class="exit" style="position: absolute; z-index: 10; right: 0; top: 0; width: ${60 * s}px; height: ${h}px; background: transparent;"></div>
+<div class="exit" style="position: absolute; z-index: 10; left : 0; top   : 0; width: ${60 * s}px; height: ${h}px; background: transparent;"></div>
+<div class="exit" style="position: absolute; z-index: 10; right: 0; top   : 0; width: ${60 * s}px; height: ${h}px; background: transparent;"></div>
+<div class="exit" style="position: absolute; z-index: 10; left : 0; bottom: 0; width: ${w}px; height: ${50 * s}px; background: transparent;"></div>
 <img src="./trailers/${w}x${h}/flatscreen.png" style="position: relative; z-index: 5; width: ${800 * s}px; height: ${450 * s}px; margin: 0; padding: 0; inset: 0; pointer-events: none; cursor: initial;">
 	`
 	const domElem = scene.add.dom( 0, 0, 'div', `background-color: #432; overflow: hidden;`).setClassName('container').setOrigin(0).setHTML( embeddedYoutube )
