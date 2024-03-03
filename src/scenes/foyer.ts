@@ -98,7 +98,6 @@ function go ( scene: Phaser.Scene ): void {
 	})
 	choco.play( 'foyerchoco' )
 
-	const cashier = scene.add.sprite( 662 * s, 170 * s, game.sprites.FOYER.CASHIER.key )
 
 
 
