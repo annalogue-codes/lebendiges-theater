@@ -26,9 +26,10 @@ import * as Set from './utils/set'
 const VERSION = '1.0.1'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
-const WIDTH =  Ug.onMobileDevice() ? 800 : 1600
-const HEIGHT = Ug.onMobileDevice() ? 450 : 900
-const SCALE =  Ug.onMobileDevice() ? 1 : 2
+const WIDTH  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 800 : 1600
+const HEIGHT = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 450 : 900
+const SCALE  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 1 : 2
+
 
 // // delete cache
 
@@ -91,9 +92,9 @@ const initialState: State = {
 const game: Up.Game = {
 	config: {
 		name: NAMEOFGAME,
-		width: Ug.onMobileDevice() ? 800 : 1600,
-		height: Ug.onMobileDevice() ? 450 : 900,
-		scale: Ug.onMobileDevice() ? 1 : 2,
+		width:  WIDTH,
+		height: HEIGHT,
+		scale:  SCALE,
 		gravity: 0,
 		durationSceneTransition: 2000,
 	},

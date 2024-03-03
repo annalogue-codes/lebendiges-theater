@@ -16,16 +16,16 @@
 import Phaser from 'phaser'
 
 import { game, w, h, s } from '../constants'
-import { debug, log, onMobileDevice } from '../utils/general'
+import { debug, log, onMobileDevice, onTablet } from '../utils/general'
 import * as Up from '../utils/phaser'
 
 /* Main part */
 
 // const lofiVolume = 0.4
 
-const videoWidth = onMobileDevice() ? 426 : 640
-const videoHeight = onMobileDevice() ? 240 : 360
-const videoScale = onMobileDevice() ? 0.95 : 1.2
+const videoWidth  = ( onMobileDevice() && !onTablet() ) ? 426 : 640
+const videoHeight = ( onMobileDevice() && !onTablet() ) ? 240 : 360
+const videoScale  = ( onMobileDevice() && !onTablet() ) ? 0.95 : 1.2
 
 
 export default class Backstage extends Phaser.Scene {
@@ -236,6 +236,11 @@ function go ( scene: Phaser.Scene ): void {
 		rewinding = scene.time.delayedCall( 500, rewind, [ video, speed ] )
 	}
 	function toggleProgramm () {
+		videos.forEach( video => {
+			stop( video )
+				.seekTo( 0 )
+				.setVisible( false )
+		})
 		if ( currentVideo == videos.length ) {
 			knobProgram.setFrame( (currentVideo + 2) % (videos.length + 1) )
 			currentVideo = (currentVideo + 1) % (videos.length + 1)
@@ -260,9 +265,6 @@ function go ( scene: Phaser.Scene ): void {
 		}
 
 		knobProgram.setFrame( (currentVideo + 2) % (videos.length + 1) )
-		stop( videos[currentVideo] )
-			.seekTo( 0 )
-			.setVisible( false )
 		currentVideo = (currentVideo + 1) % (videos.length + 1)
 
 		if ( currentVideo == videos.length ) return
