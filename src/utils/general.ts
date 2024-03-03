@@ -17,38 +17,44 @@
 const debug = false
 const presentation = false
 
-function log<T>(s: any, content?: T): T | undefined {
+function log <T>(s: any, content?: T): T | undefined {
 	if (debug) console.log(s)
 	return content
 }
 
-function fromMaybe<T>( fallBack: T, maybeVar: T ): T {
+function fromMaybe <T>( fallBack: T, maybeVar: T ): T {
 	if ( typeof maybeVar === 'undefined' ) return fallBack
 	return maybeVar
 }
 
-const sleep = ( ms: number ) => {
+function sleep ( ms: number ) {
 	return new Promise( resolve => setTimeout( resolve, ms ) )
 }
 
-const clamp = ( min: number, mid: number, max: number ) => {
+function clamp ( min: number, mid: number, max: number ) {
 	return Math.max( min, Math.min( mid, max ))
 }
 
-const random = (min: number, max: number) => Math.random() * (max - min) + min
+function random ( min: number, max: number ) {
+	return Math.random() * (max - min) + min
+}
 
-const randomInt = (min: number, max: number) => Math.floor( Math.random() * (max - min + 1) ) + min
+function randomInt (min: number, max: number) {
+	return Math.floor( Math.random() * (max - min + 1) ) + min
+}
 
-const randomElementOf = <T>(arr: Array<T>): T => arr[ Math.floor(Math.random() * arr.length) ]
+function randomElementOf <T>( arr: Array<T> ): T {
+	return arr[ Math.floor(Math.random() * arr.length) ]
+}
 
-const getFileExtension = ( filename: string ) => {
+function getFileExtension ( filename: string ) {
 	const re = /(?:\.([^.]+))?$/
 	const matches = re.exec( filename )
 	const extension = matches ? matches[1] : undefined
 	return extension
 }
 
-const onMobileDevice = () => {
+function onMobileDevice () {
 	// check for common mobile user agents
 	if (
 		navigator.userAgent.match(/Android/i) ||
@@ -63,6 +69,11 @@ const onMobileDevice = () => {
 		return true
 	}
 	return false
+}
+function onTablet () {
+	const userAgent = navigator.userAgent.toLowerCase();
+	const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(userAgent);
+	return isTablet
 }
 
 type MakePropertiesOptional<Type> = {
@@ -83,6 +94,7 @@ export {
 	randomInt,
 	randomElementOf,
 	getFileExtension,
-	onMobileDevice
+	onMobileDevice,
+	onTablet,
 }
 
