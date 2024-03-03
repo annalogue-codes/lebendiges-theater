@@ -22,6 +22,7 @@ import Loader from './scenes/loader'
 import Fassade from './scenes/fassade'
 import Entrance from './scenes/entrance'
 import Foyer from './scenes/foyer'
+import Trailers from './scenes/trailers'
 import Backstage from './scenes/backstage'
 import Hallway from './scenes/hallway'
 import Stagedoor from './scenes/stagedoor'
@@ -69,7 +70,7 @@ const config: Phaser.Types.Core.GameConfig = {
 	dom: {
 		createContainer: true
 	},
-	scene: [Init, Loader, Fassade, Entrance, Foyer, Backstage, Hallway, Stagedoor, Stage, Piano, Showroom, Paint, Wimmelbild, Snooze],
+	scene: [Init, Loader, Fassade, Entrance, Foyer, Trailers, Backstage, Hallway, Stagedoor, Stage, Piano, Showroom, Paint, Wimmelbild, Snooze],
 }
 
 const theGame = new Phaser.Game(config)

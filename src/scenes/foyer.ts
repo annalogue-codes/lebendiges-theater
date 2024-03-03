@@ -98,6 +98,10 @@ function go ( scene: Phaser.Scene ): void {
 	})
 	choco.play( 'foyerchoco' )
 
+	const cashier = scene.add.sprite( 662 * s, 170 * s, game.sprites.FOYER.CASHIER.key )
+
+
+
 	const cat = Cat.newCat( scene, 615 * s, 402 * s, 1 )
 	cat.follower.setDepth( 15 )
 	cat.follower.setFlipX( true )
@@ -673,6 +677,14 @@ function go ( scene: Phaser.Scene ): void {
 		scene: scene,
 		exit: backstage,
 		nextScene: game.scenes.BACKSTAGE,
+	})
+	const trailers = scene.add.rectangle( 710 * s, 140 * s, 90 * s, 57 * s, 0x553366 )
+		.setOrigin( 0 ).setDepth( 2 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
+	Up.addExit({
+		game: game,
+		scene: scene,
+		exit: trailers,
+		nextScene: game.scenes.TRAILERS,
 	})
 
 	log(`${scene.scene.key} created.`)

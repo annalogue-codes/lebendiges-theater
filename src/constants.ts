@@ -144,6 +144,15 @@ const game: Up.Game = {
 		FOYER: {
 			BACKGROUND: { key: `foyer/${WIDTH}x${HEIGHT}/background.jpg` },
 		},
+		TRAILERS: {
+			BACKGROUND: { key: `trailers/${WIDTH}x${HEIGHT}/flatscreen.png` },
+			BUTTON1A: { key: `trailers/${WIDTH}x${HEIGHT}/button-1-a.png` },
+			BUTTON1B: { key: `trailers/${WIDTH}x${HEIGHT}/button-1-b.png` },
+			BUTTON2A: { key: `trailers/${WIDTH}x${HEIGHT}/button-2-a.png` },
+			BUTTON2B: { key: `trailers/${WIDTH}x${HEIGHT}/button-2-b.png` },
+			BUTTON3A: { key: `trailers/${WIDTH}x${HEIGHT}/button-3-a.png` },
+			BUTTON3B: { key: `trailers/${WIDTH}x${HEIGHT}/button-3-b.png` },
+		},
 		HALLWAY: {
 			BACKGROUND: { key: `hallway/${WIDTH}x${HEIGHT}/background.jpg` },
 			RAILING: { key: `hallway/${WIDTH}x${HEIGHT}/railing.png` },
