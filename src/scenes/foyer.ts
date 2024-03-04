@@ -16,10 +16,13 @@
 import Phaser from 'phaser'
 
 import { game, getState, addState, w, h, s } from '../constants'
-import * as Cat from '../sprites/cat'
 import { debug, log } from '../utils/general'
 import * as Set from '../utils/set'
+import * as Ug from '../utils/general'
 import * as Up from '../utils/phaser'
+
+import * as Cat from '../sprites/cat'
+import * as Inventory from '../utils/inventory'
 
 /* Main part */
 
@@ -44,6 +47,7 @@ export default class Foyer extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -55,6 +59,19 @@ function go ( scene: Phaser.Scene ): void {
 	// Ambience
 	Up.addBackground({ game: game, scene: scene, key: game.images.FOYER.BACKGROUND.key })
 	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.JAZZ.key, volume: game.soundsPersistant.AMBIENCE.JAZZ.volume, fadeIn: 3000 })
+
+	// Sounds
+	let currentTalk: Phaser.Sound.BaseSound
+
+	const woIstDennNur = scene.sound.get( game.sounds.FOYER.WOISTDENNNUR.key )
+	const ferdiesTrompete = scene.sound.get( game.sounds.FOYER.FERDISTROMPETE.key )
+	const ohHallo = scene.sound.get( game.sounds.FOYER.OHHALLO.key )
+	const obenImSpielzimmer = scene.sound.get( game.sounds.FOYER.OBENIMSPIELZIMMER.key )
+
+	const atzesSounds = [ woIstDennNur, ferdiesTrompete, ohHallo, obenImSpielzimmer ]
+
+	const snowman_hey = Up.audio.add({ scene: scene, sound: game.sounds.FOYER.snowman_hey })
+	const wastebasket_hey = Up.audio.add({ scene: scene, sound: game.sounds.FOYER.wastebasket_hey })
 
 	// Objects
 	const snorlax = scene.add.sprite( 500 * s, 257 * s, game.sprites.FOYER.SNORLAX.key ).setScale( 0.5 )
@@ -98,12 +115,139 @@ function go ( scene: Phaser.Scene ): void {
 	})
 	choco.play( 'foyerchoco' )
 
+	// Snowman
+	const snowmanHead = scene.add.sprite(    277 * s, 289 * s, game.sprites.FOYER.SNOWMAN.key ).setOrigin( 0 ).setInteractive()
+	const snowman     = scene.add.rectangle( 277 * s, 285 * s, 30 * s, 70 * s, 0x553366 )
+		.setOrigin( 0 ).setDepth( 2 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
+	snowmanHead.anims.create({
+		key: 'talk',
+		frameRate: 5,
+		repeat: -1,
+		skipMissedFrames: true,
+		frames: [
+			...scene.anims.generateFrameNumbers( game.sprites.FOYER.SNOWMAN.key, {
+				start: 1, end: 18,
+			}),
+			...scene.anims.generateFrameNumbers( game.sprites.FOYER.SNOWMAN.key, {
+				start: 17, end: 0,
+			}),
+		],
+	})
+	snowman.off( Phaser.Input.Events.POINTER_UP )
+	snowman.once( Phaser.Input.Events.POINTER_UP, snowmanTalk )
+	function snowmanTalk () {
+		if ( atzesSounds.some( sound => sound.isPlaying ) ) return
 
+		currentTalk?.stop()
+		snowmanHead.play( 'talk' )
+		currentTalk = Up.audio.play({ scene: scene, audio: snowman_hey }).sound
+		Array("complete", "stop").forEach( (event: string) => snowman_hey.sound.on( event, () => {
+			snowmanHead.stop().setFrame( 0 )
+			snowman.once( Phaser.Input.Events.POINTER_UP, snowmanTalk )
+		}))
+	}
+
+	// Wastebasket
+	const wastebasketHead = scene.add.sprite(    624 * s, 328 * s, game.sprites.FOYER.WASTEBASKET.key ).setOrigin( 0 ).setInteractive()
+	const wastebasket     = scene.add.rectangle( 623 * s, 330 * s, 31 * s, 52 * s, 0x553366 )
+		.setOrigin( 0 ).setDepth( 2 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
+	wastebasketHead.anims.create({
+		key: 'talk',
+		frameRate: 5,
+		repeat: -1,
+		skipMissedFrames: true,
+		frames: [
+			...scene.anims.generateFrameNumbers( game.sprites.FOYER.WASTEBASKET.key, {
+				start: 1, end: 19,
+			}),
+			...scene.anims.generateFrameNumbers( game.sprites.FOYER.WASTEBASKET.key, {
+				start: 18, end: 0,
+			}),
+		],
+	})
+	wastebasket.off( Phaser.Input.Events.POINTER_UP )
+	wastebasket.once( Phaser.Input.Events.POINTER_UP, wastebasketTalk )
+	function wastebasketTalk () {
+		if ( atzesSounds.some( sound => sound.isPlaying ) ) return
+
+		currentTalk?.stop()
+		wastebasketHead.play( 'talk' )
+		currentTalk = Up.audio.play({ scene: scene, audio: wastebasket_hey }).sound
+		Array("complete", "stop").forEach( (event: string) => wastebasket_hey.sound.on( event, () => {
+			wastebasketHead.stop().setFrame( 0 )
+			wastebasket.once( Phaser.Input.Events.POINTER_UP, wastebasketTalk )
+		}))
+	}
+
+	// Cashier
 	if ( Set.toArray( getState().peopleFound ).length > 2 ) {
-		const cashier = scene.add.image( 695 * s, 253 * s, game.images.FOYER.CASHIER.key )
+		const cashier     = scene.add.image(  695 * s, 253 * s, game.images.FOYER.CASHIER.key )
+		const cashierHead = scene.add.sprite( 680.2 * s, 248.7 * s, game.sprites.FOYER.CASHIERHEAD.key ).setOrigin( 0 ).setInteractive()
+
+		cashierHead.anims.create({
+			key: 'blink',
+			frameRate: 5,
+			repeat: 0,
+			delay: 3000,
+			showBeforeDelay: true,
+			skipMissedFrames: true,
+			frames: [
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					frames: [ 0, 1, 2, 3, 2, 1, 0 ]
+				}),
+			],
+		})
+		cashierHead.anims.create({
+			key: 'talk',
+			frameRate: 5,
+			repeat: -1,
+			skipMissedFrames: true,
+			frames: [
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 5, end: 10,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 9, end: 4,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 5, end: 10,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 9, end: 4,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 5, end: 10,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 0, end: 3,
+				}),
+				...scene.anims.generateFrameNumbers( game.sprites.FOYER.CASHIERHEAD.key, {
+					start: 2, end: 0,
+				}),
+			],
+		})
+
+		cashierHead.off( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'blink' )
+		cashierHead.on(  Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'blink', () => {
+			const dice = Ug.randomInt( 0, 20000 )
+			if ( dice < 5000 ) {
+				cashierHead.play({ key: 'blink', delay: dice } )
+				return
+			}
+			const delay     = Ug.randomInt( 1000, 8000 )
+			const stopAfter = Ug.randomInt( 4000, 16000 )
+			scene.time.delayedCall( delay, () => {
+				cashierHead.play( 'talk' )
+				scene.time.delayedCall( stopAfter, () => {
+					cashierHead.play( 'blink' )
+				})
+			})
+		})
+		cashierHead.play( 'blink' )
 	}
 
 
+	// Cat
 	const cat = Cat.newCat( scene, 615 * s, 402 * s, 1 )
 	cat.follower.setDepth( 15 )
 	cat.follower.setFlipX( true )
@@ -115,11 +259,8 @@ function go ( scene: Phaser.Scene ): void {
 	],
 	Cat.playRandomCatSounds({ cat: cat, preDelay: true })
 
-	debug
-		? motions.walkFromDoor({ cat: cat })
-		: motions.walkFromDoor({ cat: cat })
 
-
+	// Atze
 	const atze = scene.add.sprite( 362 * s, 274 * s, game.sprites.FOYER.ATZE.key ).setOrigin( 0, 0 )
 	atze.setScale( 0.85 )
 	atze.setDepth( 5 )
@@ -513,12 +654,9 @@ function go ( scene: Phaser.Scene ): void {
 		],
 	})
 
-	const woIstDennNur = scene.sound.get( game.sounds.FOYER.WOISTDENNNUR.key )
-	const ferdiesTrompete = scene.sound.get( game.sounds.FOYER.FERDISTROMPETE.key )
-	const ohHallo = scene.sound.get( game.sounds.FOYER.OHHALLO.key )
-	const obenImSpielzimmer = scene.sound.get( game.sounds.FOYER.OBENIMSPIELZIMMER.key )
 
 	const atzeExplain = () => {
+		currentTalk?.stop()
 		atzeHead.off( Phaser.Animations.Events.ANIMATION_START )
 		atzeHead.once( Phaser.Animations.Events.ANIMATION_START, () => {
 			obenImSpielzimmer.play({ volume: game.sounds.FOYER.OBENIMSPIELZIMMER.volume })
@@ -538,7 +676,7 @@ function go ( scene: Phaser.Scene ): void {
 			})
 		})
 	}
-	const atzeSpeak = ( topic: string ) => {
+	function atzeSpeak ( topic: string ) {
 		const sound = scene.sound.get( game.sounds.FOYER[ topic ].key )
 		const volume = game.sounds.FOYER[ topic ].volume
 		atzeHead.play( 'talking' )
@@ -627,14 +765,24 @@ function go ( scene: Phaser.Scene ): void {
 	atze.on( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeWishMachine', () => { atze.play( 'atzeGold' ) })
 	atze.on( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeGold', () => { atze.play( 'atzeBow' ) })
 
-	// Inventory
-	const inventory = Set.toArray(getState().inventory)
-	const inventoryIcons = {} as { [key: string]: Phaser.GameObjects.Image }
-	for ( let i = 0; i < inventory.length; i++ ) {
-		inventoryIcons[inventory[i]] = scene.add.image( (700 - i * 50) * s, 400 * s, inventory[i] )
+	// Stray Items
+	const icons = Inventory.getIcons({ game: game, scene: scene })
+	for ( let [ index, item ] of Object.entries( icons ) ) {
+		( item as Phaser.GameObjects.Image ).off( Phaser.Input.Events.POINTER_UP ).on( Phaser.Input.Events.POINTER_UP, () => {
+			console.log( 'clicked' )
+			atzeSpeak( 'found_' + index )
+		})
 	}
 
+	const chest = scene.add.image( 715 * s, 395 * s, game.images.inventory.chest.key )
+		.setOrigin( 0 ).setInteractive()
+	chest.on( 'pointerup', () => { Inventory.toggleChest( icons) })
 
+	const trumpet = scene.add.image( 695 * s, 253 * s, game.images.FOYER.trumpet.key ).setInteractive()
+	trumpet.on( 'pointerup', () => { Inventory.add( 'knife' ) })
+
+
+	// EXits
 	const piano = scene.add.rectangle( 370 * s, 265 * s, 65 * s, 50 * s, 0x553366 )
 		.setOrigin( 0 ).setDepth( 2 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
 	Up.addExit({

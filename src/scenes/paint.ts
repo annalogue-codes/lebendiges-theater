@@ -14,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { game, s } from '../constants'
+import { game, getState, s } from '../constants'
 import { debug, log } from '../utils/general'
 import * as Up from '../utils/phaser'
 
@@ -58,7 +58,13 @@ function go ( scene: Phaser.Scene ): void {
 	// const atze = scene.add.image( 0.34 * w, 0.64 * h, game.images.FOYER.ATZEBOW ).setOrigin( 0 )
 	// atze.setDepth( 5 )
 
-	const paper = scene.add.renderTexture(200 * s, 50 * s, 450 * s, 305 * s).setOrigin( 0 )
+	const paper = scene.add.renderTexture(200 * s, 50 * s, 450 * s, 305 * s).setOrigin( 0 ) as Phaser.GameObjects.RenderTexture
+	if ( scene.textures.exists( 'painting' ) ) {
+		paper.setTexture( 'painting' )
+	} else {
+		paper.saveTexture( 'painting' )
+	}
+
 	let brush = scene.textures.getFrame( game.images.PAINT.BRUSH2.key )
 	let color = 0xFFC740
 
@@ -116,12 +122,13 @@ function go ( scene: Phaser.Scene ): void {
 	scene.input.on('pointermove', ( pointer: Phaser.Input.Pointer ) => {
 		if (pointer.isDown) {
 			if ( color === 0xFFFFFF ) {
-				paper!.erase(brush, pointer.x - (200 * s) - (brush.width / 2), pointer.y - (50 * s) - (brush.height / 2) )
+				paper.erase(brush, pointer.x - (200 * s) - (brush.width / 2), pointer.y - (50 * s) - (brush.height / 2) )
 			} else {
-				paper!.draw(brush, pointer.x - (200 * s) - (brush.width / 2), pointer.y - (50 * s) - (brush.height / 2), 1, color )
+				paper.draw(brush, pointer.x - (200 * s) - (brush.width / 2), pointer.y - (50 * s) - (brush.height / 2), 1, color )
 			}
 		}
 	})
+
 
 	const showroom = scene.add.rectangle( 0, 360 * s, 150 * s, 90 * s, 0x553366)
 		.setOrigin( 0 )

@@ -17,6 +17,7 @@ import Phaser from 'phaser'
 
 import { game, w, h, s } from '../constants'
 import { debug, log } from '../utils/general'
+import * as Ug from '../utils/general'
 import * as Up from '../utils/phaser'
 import * as Cat from '../sprites/cat'
 
@@ -56,8 +57,44 @@ function go ( scene: Phaser.Scene ): void {
 	scene.add.image( 186 * s, 252 * s, game.images.HALLWAY.RAILING.key ).setOrigin( 0 ).setDepth( 10 )
 		// .setSize(        18 * s, 43 * s )
 		// .setDisplaySize( 18 * s, 43 * s )
-	scene.add.image( 631 * s, 82 * s, game.images.HALLWAY.RAILINGSTAGE.key ).setOrigin( 0 ).setDepth( 20 )
+	scene.add.image( 635 * s, 82 * s, game.images.HALLWAY.RAILINGSTAGE.key ).setOrigin( 0 ).setDepth( 20 )
 
+	// Bouncer
+	scene.add.image( 695 * s, 32 * s, game.images.HALLWAY.BOUNCER.key ).setOrigin( 0 ).setDepth( 10 )
+	const bouncerHead = scene.add.sprite( 716 * s, 33 * s, game.sprites.HALLWAY.BOUNCERHEAD.key ).setOrigin( 0 ).setDepth( 11 )
+	bouncerHead.anims.create({
+		key: 'blink',
+		frameRate: 6,
+		repeat: 1,
+		skipMissedFrames: true,
+		frames: [
+			...scene.anims.generateFrameNumbers( game.sprites.HALLWAY.BOUNCERHEAD.key, {
+				frames: [ 1, 0 ],
+			}),
+		],
+	})
+	bouncerHead.anims.create({
+		key: 'close',
+		frameRate: 8,
+		repeat: 0,
+		skipMissedFrames: true,
+		frames: [
+			...scene.anims.generateFrameNumbers( game.sprites.HALLWAY.BOUNCERHEAD.key, {
+				frames: [ 1, 0, 1 ]
+			}),
+		],
+	})
+	bouncerHead.off( Phaser.Animations.Events.ANIMATION_COMPLETE )
+	bouncerHead.on(  Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+		const rnd = Ug.randomInt( 1000, 12000 )
+		const dice = Math.random()
+		const key = ( dice < 0.7 ) ? 'blink' : 'close'
+		log( key )
+		scene.time.delayedCall( rnd, () => { bouncerHead.play({key: key, repeat: Math.round(1 - dice) }) } )
+	})
+	bouncerHead.play( 'blink' )
+
+	// Cat
 	const cat = Cat.newCat( scene, 325 * s, 350 * s, 1 )
 	cat.follower.setDepth( 5 )
 	cat.follower.setFlipX( false )
@@ -99,7 +136,7 @@ function go ( scene: Phaser.Scene ): void {
 		// ],
 	})
 	const stageDoor = scene.add.rectangle( 635 * s, 30 * s, 165 * s, 155 * s, 0x553366)
-		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
+		.setOrigin( 0 ).setDepth( 30 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
 	Up.addExit({
 		game: game,
 		scene: scene,

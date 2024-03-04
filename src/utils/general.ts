@@ -14,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-const debug = false
+const debug = true
 const presentation = false
 
 function log <T>(s: any, content?: T): T | undefined {
