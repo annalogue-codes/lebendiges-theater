@@ -16,20 +16,23 @@
 import Phaser from 'phaser'
 import * as Set from '../utils/set'
 import * as Up from '../utils/phaser'
-import { getState, addState, s } from '../constants'
+import { game, getState, addState, s } from '../constants'
 
 
 
 async function load (p: { game: Up.Game, scene: Phaser.Scene }): Promise<void> {
-	if ( p.game.images.inventory ) for (const value of Object.values( p.game.images.inventory )) {
+	if ( p.game.images.INVENTORY ) for (const value of Object.values( p.game.images.INVENTORY )) {
 		await Up.loadImageFromCache({ cache: p.game.cache, scene: p.scene, key: value.key })
+	}
+	if ( p.game.sounds.INVENTORY ) for (const value of Object.values( p.game.sounds.INVENTORY )) {
+		await Up.loadAudioFromCache({ cache: p.game.cache, scene: p.scene, key: value.key })
 	}
 }
 
 type Icons = { [key: string]: Phaser.GameObjects.Image }
 function getIcons (p: { game: Up.Game, scene: Phaser.Scene }): Icons {
 	let icons: { [key: string]: Phaser.GameObjects.Image } = {}
-	for ( const [item, image] of Object.entries( p.game.images.inventory ) ) {
+	for ( const [item, image] of Object.entries( p.game.images.INVENTORY ) ) {
 		icons[ item ] = p.scene.add.image( (-200) * s, 395 * s, image.key )
 			.setOrigin( 0 ).setDepth( 100 ).setInteractive()
 			.setAlpha( 0.001 ).setVisible( false )
@@ -85,8 +88,21 @@ function closeChest ( icons: { [key: string]: Phaser.GameObjects.Image } ) {
 	open = false
 }
 
-function add ( item: string ) {
+function add ( item: string, image: Phaser.GameObjects.Image ) {
 	addState({ inventory: Set.add( getState().inventory, item ) })
+	console.log ( game.sounds.INVENTORY.found.key )
+	image.scene.sound.add( game.sounds.INVENTORY.found.key ).play()
+	image.scene.tweens.addCounter({
+		from: 100,
+		to: 0,
+		duration: 2000,
+		onUpdate: tween => {
+			image.setAlpha( tween.getValue() / 100 )
+		},
+		onComplete: () => {
+			image.setVisible( false )
+		}
+	})
 }
 function remove ( item: string ) {
 	addState({ inventory: Set.remove( getState().inventory, item ) })

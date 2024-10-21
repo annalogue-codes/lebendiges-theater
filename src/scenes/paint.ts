@@ -17,6 +17,8 @@ import Phaser from 'phaser'
 import { game, getState, s } from '../constants'
 import { debug, log } from '../utils/general'
 import * as Up from '../utils/phaser'
+import * as Set from '../utils/set'
+import * as Inventory from '../utils/inventory'
 
 /* Main part */
 
@@ -41,6 +43,7 @@ export default class Paint extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -55,8 +58,12 @@ function go ( scene: Phaser.Scene ): void {
 
 	// Objects
 
-	// const atze = scene.add.image( 0.34 * w, 0.64 * h, game.images.FOYER.ATZEBOW ).setOrigin( 0 )
-	// atze.setDepth( 5 )
+	// Stray tems
+	if ( !Set.toArray( getState().inventory ).includes( 'crystals' ) ) {
+		const crystals = scene.add.image( 50 * s, 50 * s, game.images.PAINT.crystals.key ).setInteractive()
+		crystals.on( 'pointerup', () => { Inventory.add( 'crystals', crystals ) })
+	}
+
 
 	const paper = scene.add.renderTexture(200 * s, 50 * s, 450 * s, 305 * s).setOrigin( 0 ) as Phaser.GameObjects.RenderTexture
 	if ( scene.textures.exists( 'painting' ) ) {

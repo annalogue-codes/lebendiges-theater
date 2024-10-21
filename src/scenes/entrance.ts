@@ -18,6 +18,8 @@ import Phaser from 'phaser'
 import { game, getState, addState, w, h, s } from '../constants'
 import { debug } from '../utils/general'
 import * as Up from '../utils/phaser'
+import * as Set from '../utils/set'
+import * as Inventory from '../utils/inventory'
 import * as Cat from '../sprites/cat'
 
 /* Main part */
@@ -46,6 +48,7 @@ export default class Entrance extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -65,6 +68,15 @@ function go ( scene: Phaser.Scene ): void {
 	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.JAZZ.key, volume: getState().entranceopen ? jazzVolume : 0 })
 
 	// Objects
+
+	// Stray items
+	if ( getState().metAtze && !Set.toArray( getState().inventory ).includes( 'knife' ) ) {
+		const knife = scene.add.image( 60 * s, 370 * s, game.images.ENTRANCE.knife.key ).setInteractive().setDepth( 100 ).setAngle( -20 ).setScale( 1.3 )
+		knife.on( 'pointerup', () => { Inventory.add( 'knife', knife ) })
+	}
+
+
+
 	const inner = scene.add.image( 0.26 * w, 0.21 * h, game.images.ENTRANCE.INNER.key )
 		.setOrigin( 0, 0 )
 		.setDepth( 1 )
@@ -90,12 +102,12 @@ function go ( scene: Phaser.Scene ): void {
 		onDoors({ doorLeft: doorLeft, doorRight: doorRight, doorArea: doorArea, now: true })
 	}
 
-	const fassadeAreaOne = scene.add.rectangle( 0, 0, 0.16 * w, 0.93 * h, 0x553366)
+	const fassadeAreaOne = scene.add.rectangle( 0, 0, 0.16 * w, 0.65 * h, 0x553366)
 		.setOrigin( 0, 0 )
 		.setDepth( 11 )
 		.setInteractive()
 	fassadeAreaOne.alpha = debug ? 0.5 : 0.001
-	const fassadeAreaTwo = scene.add.rectangle( 0, 0.93 * h, 0.6 * w, 1 * h, 0x553366)
+	const fassadeAreaTwo = scene.add.rectangle( 0.15 * w, 0.93 * h, 0.45 * w, 1 * h, 0x553366)
 		.setOrigin( 0, 0 )
 		.setDepth( 11 )
 		.setInteractive()

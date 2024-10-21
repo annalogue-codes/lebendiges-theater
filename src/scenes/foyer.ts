@@ -259,6 +259,9 @@ function go ( scene: Phaser.Scene ): void {
 	],
 	Cat.playRandomCatSounds({ cat: cat, preDelay: true })
 
+	debug
+		? motions.walkFromDoor({ cat: cat })
+		: motions.walkFromDoor({ cat: cat })
 
 	// Atze
 	const atze = scene.add.sprite( 362 * s, 274 * s, game.sprites.FOYER.ATZE.key ).setOrigin( 0, 0 )
@@ -654,9 +657,20 @@ function go ( scene: Phaser.Scene ): void {
 		],
 	})
 
+	const allPeople = [ 'albirea', 'bach', 'bear', 'entlein', 'hauptmann', 'neinhorn', 'ronja', 'sams' ]
+	const allItems = [ 'crystals', 'pass', 'wig', 'wunschmaschine', 'knife' ]
+	const missingPeople = Set.toArray( Set.remove( Set.newSet( allPeople ), Set.toArray(getState().peopleFound) ) )
+	const missingItems  = Set.toArray( Set.remove( Set.newSet( allItems ) , Set.toArray(getState().inventory) ) )
+	const missingPeopleAndItems = [ ...missingPeople, ...missingItems ]
+	const atzeTopics = missingPeopleAndItems.map( m => 'missing_' + m )
+	const atzeSilentTopics = [ 'atzeRabbit', 'atzeWishMachine', 'atzeGold' ]
+
+
+	let atzeIsTalking = false
 
 	const atzeExplain = () => {
 		currentTalk?.stop()
+		atzeIsTalking = true
 		atzeHead.off( Phaser.Animations.Events.ANIMATION_START )
 		atzeHead.once( Phaser.Animations.Events.ANIMATION_START, () => {
 			obenImSpielzimmer.play({ volume: game.sounds.FOYER.OBENIMSPIELZIMMER.volume })
@@ -664,10 +678,10 @@ function go ( scene: Phaser.Scene ): void {
 		atzeHead.play( 'obenImSpielzimmer' )
 		obenImSpielzimmer.off( Phaser.Sound.Events.COMPLETE )
 		obenImSpielzimmer.once( Phaser.Sound.Events.COMPLETE, () => {
+			atzeIsTalking = false
 			atzeHead.stopOnFrame( atzeHead.anims.get( 'obenImSpielzimmer' ).frames[ 0 ] )
 			scene.time.delayedCall( 2000, () => {
-				atzeHead.play( 'atzeTalking' )
-				atze.play( 'atzeRabbit' )
+				atzeRandomTopics()
 
 				atzeFrame.off( Phaser.Input.Events.POINTER_UP )
 				atzeFrame.once( Phaser.Input.Events.POINTER_UP, () => {
@@ -676,18 +690,23 @@ function go ( scene: Phaser.Scene ): void {
 			})
 		})
 	}
+
 	function atzeSpeak ( topic: string ) {
+		if ( atzeIsTalking ) {
+			atze.emit( 'atzeSpeakComplete')
+			return
+		}
+
+		atzeIsTalking = true
 		const sound = scene.sound.get( game.sounds.FOYER[ topic ].key )
 		const volume = game.sounds.FOYER[ topic ].volume
 		atzeHead.play( 'talking' )
 		sound.play({ volume: volume })
 		sound.off( Phaser.Sound.Events.COMPLETE )
 		sound.once( Phaser.Sound.Events.COMPLETE, () => {
+			atzeIsTalking = false
 			atzeHead.stop().setFrame( 0 )
-			scene.time.delayedCall( 2000, () => {
-				atzeHead.play( 'atzeTalking' )
-				atze.play( 'atzeRabbit' )
-			})
+			atze.emit( 'atzeSpeakComplete')
 		})
 	}
 
@@ -746,16 +765,20 @@ function go ( scene: Phaser.Scene ): void {
 			atzeHead.play( 'woIstDennNur' )
 		})
 	} else {
-		scene.time.delayedCall( 1500, () => {
-			atzeHead.play( 'atzeTalking' )
-			atze.play( 'atzeRabbit' )
-		})
 		atze.off( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeBow' )
 		atze.on( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeBow', () => { atze.play( 'atzeRabbit' ) })
 
 		atzeFrame.off( Phaser.Input.Events.POINTER_UP )
 		atzeFrame.once( Phaser.Input.Events.POINTER_UP, () => {
 			atzeExplain()
+		})
+		if ( missingPeople.length === 0 ) {
+			scene.time.delayedCall( 2000, () => {
+				atzeSpeak( 'found_everyone' )
+			})
+		}
+		scene.time.delayedCall( 2100, () => {
+			atzeRandomTopics()
 		})
 	}
 	atze.off( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeRabbit' )
@@ -765,21 +788,48 @@ function go ( scene: Phaser.Scene ): void {
 	atze.on( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeWishMachine', () => { atze.play( 'atzeGold' ) })
 	atze.on( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'atzeGold', () => { atze.play( 'atzeBow' ) })
 
-	// Stray Items
-	const icons = Inventory.getIcons({ game: game, scene: scene })
-	for ( let [ index, item ] of Object.entries( icons ) ) {
-		( item as Phaser.GameObjects.Image ).off( Phaser.Input.Events.POINTER_UP ).on( Phaser.Input.Events.POINTER_UP, () => {
-			console.log( 'clicked' )
-			atzeSpeak( 'found_' + index )
+	let randomTalk: Phaser.Time.TimerEvent
+
+	function atzeRandomTopics () {
+		log( 'randomtopics' )
+		atze.off('atzeSpeakComplete')
+
+		const silentTopic = Ug.randomElementOf( atzeSilentTopics )
+		atze.play( silentTopic )
+		atzeHead.play( 'atzeTalking' )
+
+		const delay = Ug.randomInt( 1000, 20000 )
+		scene.time.removeEvent( randomTalk )
+		randomTalk = scene.time.delayedCall( delay, () => {
+			if ( Math.random() < 1.3 ) {
+				if ( atzeIsTalking || currentTalk?.isPlaying ) {
+					atze.emit('atzeSpeakComplete')
+				} else {
+					const topic = Ug.randomElementOf( atzeTopics )
+					log( topic )
+					// atze.stopAfterRepeat( 0 )
+					atzeSpeak( topic )
+				}
+			} else {
+				atze.emit('atzeSpeakComplete')
+			}
 		})
 	}
 
-	const chest = scene.add.image( 715 * s, 395 * s, game.images.inventory.chest.key )
-		.setOrigin( 0 ).setInteractive()
-	chest.on( 'pointerup', () => { Inventory.toggleChest( icons) })
+	// Stray Items
+	const icons = Inventory.getIcons({ game: game, scene: scene })
+	for ( let [ item, image ] of Object.entries( icons ) ) {
+		( image as Phaser.GameObjects.Image ).off( Phaser.Input.Events.POINTER_UP ).on( Phaser.Input.Events.POINTER_UP, () => {
+			console.log( 'clicked' )
+			atzeSpeak( 'found_' + item )
+		})
+	}
 
-	const trumpet = scene.add.image( 695 * s, 253 * s, game.images.FOYER.trumpet.key ).setInteractive()
-	trumpet.on( 'pointerup', () => { Inventory.add( 'knife' ) })
+	if ( Set.toArray( getState().inventory ).length !== 0 ) {
+		const chest = scene.add.image( 715 * s, 395 * s, game.images.INVENTORY.chest.key )
+			.setOrigin( 0 ).setInteractive()
+		chest.on( 'pointerup', () => { Inventory.toggleChest( icons) })
+	}
 
 
 	// EXits

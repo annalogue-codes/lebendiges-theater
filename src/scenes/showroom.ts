@@ -14,10 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { game, s } from '../constants'
+import { game, getState, s } from '../constants'
 import * as Cat from '../sprites/cat'
 import { debug, log } from '../utils/general'
+import * as Set from '../utils/set'
 import * as Up from '../utils/phaser'
+import * as Inventory from '../utils/inventory'
 
 /* Main part */
 
@@ -35,6 +37,7 @@ export default class Showroom extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -46,6 +49,12 @@ function go ( scene: Phaser.Scene ): void {
 	// Ambience
 	Up.addBackground({ game: game, scene: scene, key: game.images.SHOWROOM.BACKGROUND.key })
 	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume * (2/3), fadeIn: 3000 })
+
+	// Stray tems
+	if ( !Set.toArray( getState().inventory ).includes( 'wig' ) ) {
+		const wig = scene.add.image( 150 * s, 200 * s, game.images.SHOWROOM.wig.key ).setInteractive().setDepth( 50 )
+		wig.on( 'pointerup', () => { Inventory.add( 'wig', wig ) })
+	}
 
 	// The Cat!
 	const cat = Cat.newCat( scene, 700 * s, 365 * s, 1 )

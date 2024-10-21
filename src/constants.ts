@@ -23,7 +23,7 @@ import * as Up from './utils/phaser'
 import * as Set from './utils/set'
 
 // ascii letters only
-const VERSION = '1.0.2'
+const VERSION = '1.0.3'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
 const WIDTH  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 800 : 1600
@@ -36,7 +36,8 @@ const SCALE  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 1 : 2
 await caches.delete( `${NAMEOFGAME}-cache` )
 await caches.delete( `${NAMEOFGAME}-1.0.0-cache` )
 await caches.delete( `${NAMEOFGAME}-1.0.1-cache` )
-// await caches.delete( `${NAMEOFGAME}-1.0.2-cache` )
+await caches.delete( `${NAMEOFGAME}-1.0.2-cache` )
+// await caches.delete( `${NAMEOFGAME}-1.0.3-cache` )
 
 const cache = await Up.openCache({ nameOfCache: `${NAMEOFGAME}-${VERSION}` })
 
@@ -126,81 +127,80 @@ const game: Up.Game = {
 			CIRCLE: { key: `other/${WIDTH}x${HEIGHT}/glowCircle_small.png` },
 		},
 		BACKSTAGE: {
-			BACKGROUND:  { key: `backstage/${WIDTH}x${HEIGHT}/television.png` },
+			BACKGROUND:     { key: `backstage/${WIDTH}x${HEIGHT}/television.png` },
 		},
-		ENTRANCE: {
-			BACKGROUND: { key: `entrance/${WIDTH}x${HEIGHT}/background.png` },
-			DOORLEFT:   { key: `entrance/${WIDTH}x${HEIGHT}/doorLeft.png` },
-			DOORRIGHT:  { key: `entrance/${WIDTH}x${HEIGHT}/doorRight.png` },
-			INNER:      { key: `entrance/${WIDTH}x${HEIGHT}/inner.png` },
-			RAINDROP:   { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
-		},
-		FASSADE: {
-			BACKGROUND: { key: `fassade/${WIDTH}x${HEIGHT}/background.png` },
-			DOORLEFT:   { key: `fassade/${WIDTH}x${HEIGHT}/doorLeft.png` },
-			DOORRIGHT:  { key: `fassade/${WIDTH}x${HEIGHT}/doorRight.png` },
-			DOORINNER:  { key: `fassade/${WIDTH}x${HEIGHT}/doorInner.png` },
-			PILLAR1:    { key: `fassade/${WIDTH}x${HEIGHT}/pillar1.png` },
-			PILLAR2:    { key: `fassade/${WIDTH}x${HEIGHT}/pillar2.png` },
-			RAINDROP:   { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
-		},
-		FOYER: {
-			BACKGROUND: { key: `foyer/${WIDTH}x${HEIGHT}/background.jpg` },
-			CASHIER:    { key: `foyer/${WIDTH}x${HEIGHT}/cashier.png` },
-			SHUTTERS:   { key: `foyer/${WIDTH}x${HEIGHT}/shutters.png` },
-			// stray items
-			trumpet:        { key: `strayitems/${WIDTH}x${HEIGHT}/trumpet.png` },
-			bandaid:        { key: `strayitems/${WIDTH}x${HEIGHT}/bandaid.png` },
-			cristals:       { key: `strayitems/${WIDTH}x${HEIGHT}/cristals.png` },
-			wig:            { key: `strayitems/${WIDTH}x${HEIGHT}/wig.png` },
+		ENTRANCE:           {
+			BACKGROUND:     { key: `entrance/${WIDTH}x${HEIGHT}/background.png` },
+			DOORLEFT:       { key: `entrance/${WIDTH}x${HEIGHT}/doorLeft.png` },
+			DOORRIGHT:      { key: `entrance/${WIDTH}x${HEIGHT}/doorRight.png` },
+			INNER:          { key: `entrance/${WIDTH}x${HEIGHT}/inner.png` },
+			RAINDROP:       { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
 			knife:          { key: `strayitems/${WIDTH}x${HEIGHT}/knife.png` },
+		},
+		FASSADE:            {
+			BACKGROUND:     { key: `fassade/${WIDTH}x${HEIGHT}/background.png` },
+			DOORLEFT:       { key: `fassade/${WIDTH}x${HEIGHT}/doorLeft.png` },
+			DOORRIGHT:      { key: `fassade/${WIDTH}x${HEIGHT}/doorRight.png` },
+			DOORINNER:      { key: `fassade/${WIDTH}x${HEIGHT}/doorInner.png` },
+			PILLAR1:        { key: `fassade/${WIDTH}x${HEIGHT}/pillar1.png` },
+			PILLAR2:        { key: `fassade/${WIDTH}x${HEIGHT}/pillar2.png` },
+			RAINDROP:       { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
+		},
+		FOYER:              {
+			BACKGROUND:     { key: `foyer/${WIDTH}x${HEIGHT}/background.jpg` },
+			CASHIER:        { key: `foyer/${WIDTH}x${HEIGHT}/cashier.png` },
+			SHUTTERS:       { key: `foyer/${WIDTH}x${HEIGHT}/shutters.png` },
+			// stray items
+			bandaid:        { key: `strayitems/${WIDTH}x${HEIGHT}/bandaid.png` },
 			pass:           { key: `strayitems/${WIDTH}x${HEIGHT}/pass.png` },
 			wunschmaschine: { key: `strayitems/${WIDTH}x${HEIGHT}/wunschmaschine.png` },
 		},
-		TRAILERS: {
-			BACKGROUND: { key: `trailers/${WIDTH}x${HEIGHT}/flatscreen.png` },
-			BUTTON1A:   { key: `trailers/${WIDTH}x${HEIGHT}/button-1-a.png` },
-			BUTTON1B:   { key: `trailers/${WIDTH}x${HEIGHT}/button-1-b.png` },
-			BUTTON2A:   { key: `trailers/${WIDTH}x${HEIGHT}/button-2-a.png` },
-			BUTTON2B:   { key: `trailers/${WIDTH}x${HEIGHT}/button-2-b.png` },
-			BUTTON3A:   { key: `trailers/${WIDTH}x${HEIGHT}/button-3-a.png` },
-			BUTTON3B:   { key: `trailers/${WIDTH}x${HEIGHT}/button-3-b.png` },
+		TRAILERS:           {
+			BACKGROUND:     { key: `trailers/${WIDTH}x${HEIGHT}/flatscreen.png` },
+			BUTTON1A:       { key: `trailers/${WIDTH}x${HEIGHT}/button-1-a.png` },
+			BUTTON1B:       { key: `trailers/${WIDTH}x${HEIGHT}/button-1-b.png` },
+			BUTTON2A:       { key: `trailers/${WIDTH}x${HEIGHT}/button-2-a.png` },
+			BUTTON2B:       { key: `trailers/${WIDTH}x${HEIGHT}/button-2-b.png` },
+			BUTTON3A:       { key: `trailers/${WIDTH}x${HEIGHT}/button-3-a.png` },
+			BUTTON3B:       { key: `trailers/${WIDTH}x${HEIGHT}/button-3-b.png` },
 		},
-		HALLWAY: {
-			BACKGROUND:   { key: `hallway/${WIDTH}x${HEIGHT}/background.jpg` },
-			RAILING:      { key: `hallway/${WIDTH}x${HEIGHT}/railing.png` },
-			RAILINGSTAGE: { key: `hallway/${WIDTH}x${HEIGHT}/railing-stage.png` },
-			BOUNCER:      { key: `hallway/${WIDTH}x${HEIGHT}/bouncer.png` },
+		HALLWAY:            {
+			BACKGROUND:     { key: `hallway/${WIDTH}x${HEIGHT}/background.jpg` },
+			RAILING:        { key: `hallway/${WIDTH}x${HEIGHT}/railing.png` },
+			RAILINGSTAGE:   { key: `hallway/${WIDTH}x${HEIGHT}/railing-stage.png` },
+			BOUNCER:        { key: `hallway/${WIDTH}x${HEIGHT}/bouncer.png` },
+			trumpet:        { key: `strayitems/${WIDTH}x${HEIGHT}/trumpet.png` },
 		},
-		inventory: {
+		INVENTORY:          {
 			// stray items
 			chest:          { key: `strayitems/${WIDTH}x${HEIGHT}/chest.png` },
 			trumpet:        { key: `strayitems/${WIDTH}x${HEIGHT}/trumpet-button.png` },
 			bandaid:        { key: `strayitems/${WIDTH}x${HEIGHT}/bandaid-button.png` },
-			cristals:       { key: `strayitems/${WIDTH}x${HEIGHT}/cristals-button.png` },
+			crystals:       { key: `strayitems/${WIDTH}x${HEIGHT}/crystals-button.png` },
 			wig:            { key: `strayitems/${WIDTH}x${HEIGHT}/wig-button.png` },
 			knife:          { key: `strayitems/${WIDTH}x${HEIGHT}/knife-button.png` },
 			pass:           { key: `strayitems/${WIDTH}x${HEIGHT}/pass-button.png` },
 			wunschmaschine: { key: `strayitems/${WIDTH}x${HEIGHT}/wunschmaschine-button.png` },
 		},
-		PAINT: {
-			BACKGROUND: { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
-			BRUSH1:     { key: `paint/${WIDTH}x${HEIGHT}/brush1.png` },
-			BRUSH2:     { key: `paint/${WIDTH}x${HEIGHT}/brush2.png` },
-			BRUSH3:     { key: `paint/${WIDTH}x${HEIGHT}/brush3.png` },
+		PAINT:              {
+			BACKGROUND:     { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
+			BRUSH1:         { key: `paint/${WIDTH}x${HEIGHT}/brush1.png` },
+			BRUSH2:         { key: `paint/${WIDTH}x${HEIGHT}/brush2.png` },
+			BRUSH3:         { key: `paint/${WIDTH}x${HEIGHT}/brush3.png` },
+			crystals:       { key: `strayitems/${WIDTH}x${HEIGHT}/crystals.png` },
 		},
-		PIANO: {
-			BACKGROUND: { key: `piano/${WIDTH}x${HEIGHT}/background.jpg` },
-			BUTTON:     { key: `piano/${WIDTH}x${HEIGHT}/button.png` },
-			WHITEKEYS:  { key: `piano/${WIDTH}x${HEIGHT}/whitekeys.blank.png` },
-			BLACKKEYS:  { key: `piano/${WIDTH}x${HEIGHT}/blackkeys.png` },
-			LINEG:      { key: `piano/${WIDTH}x${HEIGHT}/lineG.png` },
-			LINEA:      { key: `piano/${WIDTH}x${HEIGHT}/lineA.png` },
-			LINEB:      { key: `piano/${WIDTH}x${HEIGHT}/lineB.png` },
-			LINEC:      { key: `piano/${WIDTH}x${HEIGHT}/lineC.png` },
-			LINED:      { key: `piano/${WIDTH}x${HEIGHT}/lineD.png` },
-			LINEE:      { key: `piano/${WIDTH}x${HEIGHT}/lineE.png` },
-			LINEF:      { key: `piano/${WIDTH}x${HEIGHT}/lineF.png` },
+		PIANO:              {
+			BACKGROUND:     { key: `piano/${WIDTH}x${HEIGHT}/background.jpg` },
+			BUTTON:         { key: `piano/${WIDTH}x${HEIGHT}/button.png` },
+			WHITEKEYS:      { key: `piano/${WIDTH}x${HEIGHT}/whitekeys.blank.png` },
+			BLACKKEYS:      { key: `piano/${WIDTH}x${HEIGHT}/blackkeys.png` },
+			LINEG:          { key: `piano/${WIDTH}x${HEIGHT}/lineG.png` },
+			LINEA:          { key: `piano/${WIDTH}x${HEIGHT}/lineA.png` },
+			LINEB:          { key: `piano/${WIDTH}x${HEIGHT}/lineB.png` },
+			LINEC:          { key: `piano/${WIDTH}x${HEIGHT}/lineC.png` },
+			LINED:          { key: `piano/${WIDTH}x${HEIGHT}/lineD.png` },
+			LINEE:          { key: `piano/${WIDTH}x${HEIGHT}/lineE.png` },
+			LINEF:          { key: `piano/${WIDTH}x${HEIGHT}/lineF.png` },
 		},
 		// PRESENTATION: {
 		// 	BACKGROUND: { key: `presentation/${WIDTH}x${HEIGHT}/background.jpg` },
@@ -222,7 +222,8 @@ const game: Up.Game = {
 		// 	FAMILIENNACHTVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/familiennachtVertikal02.jpg` },
 		// },
 		SHOWROOM: {
-			BACKGROUND: { key: `showroom/${WIDTH}x${HEIGHT}/background.jpg` },
+			BACKGROUND:     { key: `showroom/${WIDTH}x${HEIGHT}/background.jpg` },
+			wig:            { key: `strayitems/${WIDTH}x${HEIGHT}/wig.png` },
 			// PODIUMVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal01.jpg` },
 			// PODIUMVERTIKAL02: { key: `presentation/${WIDTH}x${HEIGHT}/podiumVertikal02.jpg` },
 			// STIMMEDERZUKUNFTVERTIKAL01: { key: `presentation/${WIDTH}x${HEIGHT}/stimmeDerZukunftVertikal01.jpg` },
@@ -427,14 +428,15 @@ const game: Up.Game = {
 			OHHALLO:                     { key: 'foyer/atze/03 - ohHallo.mp3'           , volume: 1 },
 			OBENIMSPIELZIMMER:           { key: 'foyer/atze/04 - obenImSpielzimmer.mp3' , volume: 1 },
 			found_bandaid:               { key: 'foyer/atze/found_bandaid.mp3'          , volume: 1 },
-			found_cristals:              { key: 'foyer/atze/found_cristals.mp3'         , volume: 1 },
+			found_crystals:              { key: 'foyer/atze/found_crystals.mp3'         , volume: 1 },
 			found_everyone:              { key: 'foyer/atze/found_everyone.mp3'         , volume: 1 },
 			found_wig:                   { key: 'foyer/atze/found_wig.mp3'              , volume: 1 },
 			found_knife:                 { key: 'foyer/atze/found_knife.mp3'            , volume: 1 },
 			found_pass:                  { key: 'foyer/atze/found_pass.mp3'             , volume: 1 },
+			found_trompte:               { key: 'foyer/atze/found_pass-fixme.mp3'       , volume: 1 },
 			found_wunschmaschine:        { key: 'foyer/atze/found_wunschmaschine.mp3'   , volume: 1 },
 			missing_bandaid:             { key: 'foyer/atze/missing_bandaid.mp3'        , volume: 1 },
-			missing_cristals:            { key: 'foyer/atze/missing_cristals.mp3'       , volume: 1 },
+			missing_crystals:            { key: 'foyer/atze/missing_crystals.mp3'       , volume: 1 },
 			missing_wig:                 { key: 'foyer/atze/missing_wig.mp3'            , volume: 1 },
 			missing_knife:               { key: 'foyer/atze/missing_knife.mp3'          , volume: 1 },
 			missing_pass:                { key: 'foyer/atze/missing_pass.mp3'           , volume: 1 },
@@ -450,6 +452,9 @@ const game: Up.Game = {
 			// others characters
 			snowman_hey:                 { key: 'foyer/snowman_hey-fixme.mp3'      , volume: 1 },
 			wastebasket_hey:             { key: 'foyer/wastebasket_hey-fixme.mp3'  , volume: 1 },
+		},
+		INVENTORY: {
+			found:                       { key: 'strayitems/found.mp3'             , volume: 1   },
 		},
 		PIANO: {
 			F:  { key: 'piano/piano/09.mp3', volume: 1 },
@@ -503,7 +508,7 @@ const game: Up.Game = {
 			neinhorn_hauptmann:        { key: 'stage/neinhorn_hauptmann.mp3'  , volume: 1 },
 		},
 		STAGEDOOR: {
-			welcome: { key: 'stagedoor/welcome-fixme.mp3' , volume: 0.8 },
+			welcome: { key: 'stagedoor/welcome_fixme.mp3' , volume: 0.8 },
 		},
 		WIMMELBILD: {
 			ALBIREA:   { key: 'wimmelbild/albirea.mp3'                 , volume: 1   },

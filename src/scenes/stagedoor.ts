@@ -140,8 +140,9 @@ function go ( scene: Phaser.Scene ): void {
 		pendingBlink?.remove()
 		bouncerHead.play( 'talk' )
 		Up.audio.play({ scene: scene, audio: welcome })
+		// welcome.sound.play()
 		welcome.sound.on( Phaser.Sound.Events.COMPLETE, () => {
-			bouncerHead.stop().setFrame( 0 )
+			bouncerHead?.stop().setFrame( 0 )
 		})
 	})
 	bouncerHead.play( 'blink' )
@@ -174,7 +175,7 @@ function go ( scene: Phaser.Scene ): void {
 
 
 	// Exits
-	const stage = scene.add.rectangle( 325 * s, 140 * s, 200 * s, 205 * s, 0x553366)
+	const stage = scene.add.rectangle( 325 * s, 140 * s, 140 * s, 205 * s, 0x553366)
 		.setOrigin( 0 ).setDepth( 10 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
 	Up.addExit({
 		game: game,

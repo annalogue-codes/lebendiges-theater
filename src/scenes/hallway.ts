@@ -15,10 +15,13 @@
 
 import Phaser from 'phaser'
 
-import { game, w, h, s } from '../constants'
+import { game, getState, w, h, s } from '../constants'
 import { debug, log } from '../utils/general'
 import * as Ug from '../utils/general'
+import * as Set from '../utils/set'
 import * as Up from '../utils/phaser'
+import * as Inventory from '../utils/inventory'
+
 import * as Cat from '../sprites/cat'
 
 /* Main part */
@@ -40,6 +43,7 @@ export default class Hallway extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -58,6 +62,12 @@ function go ( scene: Phaser.Scene ): void {
 		// .setSize(        18 * s, 43 * s )
 		// .setDisplaySize( 18 * s, 43 * s )
 	scene.add.image( 635 * s, 82 * s, game.images.HALLWAY.RAILINGSTAGE.key ).setOrigin( 0 ).setDepth( 20 )
+
+	// Stray tems
+	if ( !Set.toArray( getState().inventory ).includes( 'trumpet' ) ) {
+		const trumpet = scene.add.image( 695 * s, 253 * s, game.images.HALLWAY.trumpet.key ).setInteractive()
+		trumpet.on( 'pointerup', () => { Inventory.add( 'trumpet', trumpet ) })
+	}
 
 	// Bouncer
 	scene.add.image( 695 * s, 32 * s, game.images.HALLWAY.BOUNCER.key ).setOrigin( 0 ).setDepth( 10 )
