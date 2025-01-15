@@ -42,6 +42,7 @@ type Game = {
 	},
 	stateKey: string,
 	initialState: MinimalState & GenericState,
+	cacheName: string,
 	cache: Cache,
 	scenes:              { [key: string]: string },
 	images:              { [key: string]: {[key: string]: { key: string } } },
@@ -96,6 +97,22 @@ const cacheOptions = {
 const cacheAvailable = 'caches' in self
 log( `Caches available: ${cacheAvailable}` )
 
+
+// Delete any old caches to respect user's disk space.
+async function deleteOldCaches( p: {
+	nameOfCache: string
+}): Promise<void> {
+	const keys = await caches.keys()
+
+	for (const key of keys) {
+		if ( key === p.nameOfCache ) {
+			continue
+		}
+		caches.delete( key )
+		log( `Deleted cache "${key}".`)
+	}
+}
+
 async function openCache (p: {
 	nameOfCache: string,
 }): Promise<Cache> {
@@ -108,12 +125,16 @@ async function addToCache( p: {
 	key: string
 }): Promise<boolean> {
 	log( `Adding "${p.key}" into cache.` )
+
+	// guard
 	const inCache = await p.cache.match( p.key )
 	if (inCache) {
-		log( `"${p.key}" already loaded.` )
+		log( `Asset  "${p.key}" already loaded.` )
 		return false
 	}
+
 	await p.cache.add( p.key )
+	log( `Added  "${p.key}" into cache.` )
 	return true
 }
 
@@ -122,10 +143,13 @@ async function loadImageFromCache (p: {
 	scene: Phaser.Scene,
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
-	const item = await p.cache.match( p.key, cacheOptions )
-	if ( item === undefined ) {
-		log( `Cannot retrieve ${p.key} from cache.` )
-		return
+
+	let item = await p.cache.match( p.key, cacheOptions )
+	while ( item === undefined ) {
+		log( `Item   "${p.key}" not in cache. Adding it.` )
+		await p.cache.add( p.key )
+		log( `Added  "${p.key}" into cache.` )
+		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
@@ -141,10 +165,13 @@ async function loadSpriteFromCache (p: {
 	width: number,
 	height: number,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
-	const item = await p.cache.match( p.key, cacheOptions )
-	if ( item === undefined ) {
-		log( `Cannot retrieve ${p.key} from cache.` )
-		return
+
+	let item = await p.cache.match( p.key, cacheOptions )
+	while ( item === undefined ) {
+		log( `Item   "${p.key}" not in cache. Adding it.` )
+		await p.cache.add( p.key )
+		log( `Added  "${p.key}" into cache.` )
+		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
@@ -158,10 +185,13 @@ async function loadAudioFromCache (p: {
 	scene: Phaser.Scene,
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
-	const item = await p.cache.match( p.key, cacheOptions )
-	if ( item === undefined ) {
-		log( `Cannot retrieve ${p.key} from cache.` )
-		return
+
+	let item = await p.cache.match( p.key, cacheOptions )
+	while ( item === undefined ) {
+		log( `Item   "${p.key}" not in cache. Adding it.` )
+		await p.cache.add( p.key )
+		log( `Added  "${p.key}" into cache.` )
+		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
@@ -175,10 +205,13 @@ async function loadVideoFromCache (p: {
 	scene: Phaser.Scene,
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
-	const item = await p.cache.match( p.key, cacheOptions )
-	if ( item === undefined ) {
-		log( `Cannot retrieve ${p.key} from cache.` )
-		return
+
+	let item = await p.cache.match( p.key, cacheOptions )
+	while ( item === undefined ) {
+		log( `Item   "${p.key}" not in cache. Adding it.` )
+		await p.cache.add( p.key )
+		log( `Added  "${p.key}" into cache.` )
+		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
@@ -230,6 +263,7 @@ function unloadAssets (p: {	scene: Phaser.Scene }): void {
 			item instanceof Phaser.GameObjects.Sprite ||
 			item instanceof Phaser.GameObjects.Video
 		))
+		// .forEach( item => { item.destroy() } )
 		.forEach( item => { if (item) item.destroy() } )
 	return
 }
@@ -286,6 +320,12 @@ const audio: {
 		})
 	},
 	play: (p) => {
+		// // Guard
+		// if ( p.scene.sound.gameLostFocus ) {
+		// 	log( `Not playing "${p.audio.sound.key}" because game lost focus.` )
+		// 	return p.audio
+		// }
+
 		p.audio.sound.play({ volume: p.audio.volume })
 		return p.audio
 	}
@@ -536,6 +576,7 @@ export {
 	setState,
 	addState,
 	// Cache
+	deleteOldCaches,
 	openCache,
 	addToCache,
 	loadImageFromCache,

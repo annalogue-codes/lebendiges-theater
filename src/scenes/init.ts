@@ -39,25 +39,25 @@ export default class Init extends Phaser.Scene {
 		console.log( `Debug: ${debug}` )
 		if ( debug ) this.load.svg( 'grid', 'other/grid_16x9.svg', { width: game.config.width, height: game.config.height } )
 
-		// Add font for "Pause" text
-		const styleElement = document.createElement( 'style' )
-		document.head.appendChild( styleElement )
-		const sheet = styleElement.sheet
-		if ( !sheet ) return
-
-		const troika = "@font-face { font-family: 'TmonMonsori'; src: url('fonts/TmonMonsori.woff') format('woff'); font-weight: normal; font-style: normal; }"
-		sheet.insertRule( troika, 0 )
-		const noto = `@font-face { font-family: 'Noto Sans Symbols2';
-			src: url('NotoSansSymbols2-Regular.eot');
-			src: local('Noto Sans Symbols2 Regular'), local('NotoSansSymbols2-Regular'),
-				url('fonts/NotoSansSymbols2-Regular.eot?#iefix') format('embedded-opentype'),
-				url('fonts/NotoSansSymbols2-Regular.woff2') format('woff2'),
-				url('fonts/NotoSansSymbols2-Regular.woff') format('woff'),
-				url('fonts/NotoSansSymbols2-Regular.ttf') format('truetype');
-			font-weight: normal;
-			font-style: normal;
-			font-display: swap; }`
-		sheet.insertRule( noto, 1 )
+		// // Add font for "Pause" text
+		// const styleElement = document.createElement( 'style' )
+		// document.head.appendChild( styleElement )
+		// const sheet = styleElement.sheet
+		// if ( !sheet ) return
+		//
+		// const troika = "@font-face { font-family: 'TmonMonsori'; src: url('fonts/TmonMonsori.woff') format('woff'); font-weight: normal; font-style: normal; }"
+		// sheet.insertRule( troika, 0 )
+		// const noto = `@font-face { font-family: 'Noto Sans Symbols2';
+		// 	src: url('NotoSansSymbols2-Regular.eot');
+		// 	src: local('Noto Sans Symbols2 Regular'), local('NotoSansSymbols2-Regular'),
+		// 		url('fonts/NotoSansSymbols2-Regular.eot?#iefix') format('embedded-opentype'),
+		// 		url('fonts/NotoSansSymbols2-Regular.woff2') format('woff2'),
+		// 		url('fonts/NotoSansSymbols2-Regular.woff') format('woff'),
+		// 		url('fonts/NotoSansSymbols2-Regular.ttf') format('truetype');
+		// 	font-weight: normal;
+		// 	font-style: normal;
+		// 	font-display: swap; }`
+		// sheet.insertRule( noto, 1 )
 	}
 
 	create() {

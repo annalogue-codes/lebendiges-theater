@@ -26,20 +26,19 @@ import * as Set from './utils/set'
 const VERSION = '1.0.3'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
-const WIDTH  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 800 : 1600
-const HEIGHT = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 450 : 900
-const SCALE  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 1 : 2
 
+// // Adaptive asset quality
+// const WIDTH  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 800 : 1600
+// const HEIGHT = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 450 : 900
+// const SCALE  = ( Ug.onMobileDevice() && !Ug.onTablet() ) ? 1 : 2
 
-// // delete cache
+// Non-adaptive asset quality
+const WIDTH  = 1600
+const HEIGHT =  900
+const SCALE  =    2
 
-await caches.delete( `${NAMEOFGAME}-cache` )
-await caches.delete( `${NAMEOFGAME}-1.0.0-cache` )
-await caches.delete( `${NAMEOFGAME}-1.0.1-cache` )
-await caches.delete( `${NAMEOFGAME}-1.0.2-cache` )
-// await caches.delete( `${NAMEOFGAME}-1.0.3-cache` )
-
-const cache = await Up.openCache({ nameOfCache: `${NAMEOFGAME}-${VERSION}` })
+const currentCacheName = `${NAMEOFGAME}-${VERSION}`
+const cache = await Up.openCache({ nameOfCache: currentCacheName })
 
 
 type State = Up.MinimalState & {
@@ -103,6 +102,7 @@ const game: Up.Game = {
 	},
 	stateKey: NAMEOFGAME,
 	initialState: initialState,
+	cacheName: currentCacheName,
 	cache: cache,
 	scenes: {
 		INIT: 'init',
