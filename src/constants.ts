@@ -122,6 +122,10 @@ const game: Up.Game = {
 		WIMMELBILD: 'wimmelbild',
 		SNOOZE: 'snooze',
 	},
+	initialScenes: [
+		"FASSADE",
+		"ENTRANCE",
+	],
 	images: {
 		OTHER: {
 			CIRCLE: { key: `other/${WIDTH}x${HEIGHT}/glowCircle_small.png` },
@@ -129,7 +133,7 @@ const game: Up.Game = {
 		BACKSTAGE: {
 			BACKGROUND:     { key: `backstage/${WIDTH}x${HEIGHT}/television.png` },
 		},
-		ENTRANCE:           {
+		ENTRANCE: {
 			BACKGROUND:     { key: `entrance/${WIDTH}x${HEIGHT}/background.png` },
 			DOORLEFT:       { key: `entrance/${WIDTH}x${HEIGHT}/doorLeft.png` },
 			DOORRIGHT:      { key: `entrance/${WIDTH}x${HEIGHT}/doorRight.png` },
@@ -137,7 +141,7 @@ const game: Up.Game = {
 			RAINDROP:       { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
 			knife:          { key: `strayitems/${WIDTH}x${HEIGHT}/knife.png` },
 		},
-		FASSADE:            {
+		FASSADE: {
 			BACKGROUND:     { key: `fassade/${WIDTH}x${HEIGHT}/background.png` },
 			DOORLEFT:       { key: `fassade/${WIDTH}x${HEIGHT}/doorLeft.png` },
 			DOORRIGHT:      { key: `fassade/${WIDTH}x${HEIGHT}/doorRight.png` },
@@ -146,7 +150,7 @@ const game: Up.Game = {
 			PILLAR2:        { key: `fassade/${WIDTH}x${HEIGHT}/pillar2.png` },
 			RAINDROP:       { key: `other/${WIDTH}x${HEIGHT}/raindrop.png` },
 		},
-		FOYER:              {
+		FOYER: {
 			BACKGROUND:     { key: `foyer/${WIDTH}x${HEIGHT}/background.jpg` },
 			CASHIER:        { key: `foyer/${WIDTH}x${HEIGHT}/cashier.png` },
 			SHUTTERS:       { key: `foyer/${WIDTH}x${HEIGHT}/shutters.png` },
@@ -155,7 +159,7 @@ const game: Up.Game = {
 			pass:           { key: `strayitems/${WIDTH}x${HEIGHT}/pass.png` },
 			wunschmaschine: { key: `strayitems/${WIDTH}x${HEIGHT}/wunschmaschine.png` },
 		},
-		TRAILERS:           {
+		TRAILERS: {
 			BACKGROUND:     { key: `trailers/${WIDTH}x${HEIGHT}/flatscreen.png` },
 			BUTTON1A:       { key: `trailers/${WIDTH}x${HEIGHT}/button-1-a.png` },
 			BUTTON1B:       { key: `trailers/${WIDTH}x${HEIGHT}/button-1-b.png` },
@@ -164,14 +168,14 @@ const game: Up.Game = {
 			BUTTON3A:       { key: `trailers/${WIDTH}x${HEIGHT}/button-3-a.png` },
 			BUTTON3B:       { key: `trailers/${WIDTH}x${HEIGHT}/button-3-b.png` },
 		},
-		HALLWAY:            {
+		HALLWAY: {
 			BACKGROUND:     { key: `hallway/${WIDTH}x${HEIGHT}/background.jpg` },
 			RAILING:        { key: `hallway/${WIDTH}x${HEIGHT}/railing.png` },
 			RAILINGSTAGE:   { key: `hallway/${WIDTH}x${HEIGHT}/railing-stage.png` },
 			BOUNCER:        { key: `hallway/${WIDTH}x${HEIGHT}/bouncer.png` },
 			trumpet:        { key: `strayitems/${WIDTH}x${HEIGHT}/trumpet.png` },
 		},
-		INVENTORY:          {
+		INVENTORY: {
 			// stray items
 			chest:          { key: `strayitems/${WIDTH}x${HEIGHT}/chest.png` },
 			trumpet:        { key: `strayitems/${WIDTH}x${HEIGHT}/trumpet-button.png` },
@@ -182,14 +186,14 @@ const game: Up.Game = {
 			pass:           { key: `strayitems/${WIDTH}x${HEIGHT}/pass-button.png` },
 			wunschmaschine: { key: `strayitems/${WIDTH}x${HEIGHT}/wunschmaschine-button.png` },
 		},
-		PAINT:              {
+		PAINT: {
 			BACKGROUND:     { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
 			BRUSH1:         { key: `paint/${WIDTH}x${HEIGHT}/brush1.png` },
 			BRUSH2:         { key: `paint/${WIDTH}x${HEIGHT}/brush2.png` },
 			BRUSH3:         { key: `paint/${WIDTH}x${HEIGHT}/brush3.png` },
 			crystals:       { key: `strayitems/${WIDTH}x${HEIGHT}/crystals.png` },
 		},
-		PIANO:              {
+		PIANO: {
 			BACKGROUND:     { key: `piano/${WIDTH}x${HEIGHT}/background.jpg` },
 			BUTTON:         { key: `piano/${WIDTH}x${HEIGHT}/button.png` },
 			WHITEKEYS:      { key: `piano/${WIDTH}x${HEIGHT}/whitekeys.blank.png` },
@@ -402,8 +406,8 @@ const game: Up.Game = {
 	soundsPersistant: {
 		AMBIENCE: {
 			CITYRAIN:     { key: 'ambience/cityrain.mp3'     , volume: 1    },
-			LOFI:         { key: 'ambience/lofi.mp3'         , volume: 0.4  },
 			JAZZ:         { key: 'ambience/jazz.mp3'         , volume: 0.05 },
+			LOFI:         { key: 'ambience/lofi.mp3'         , volume: 0.4  },
 			NOBLESBERLIN: { key: 'ambience/noblesBerlin.mp3' , volume: 1    },
 		},
 		CAT: {

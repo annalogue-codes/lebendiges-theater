@@ -15,6 +15,7 @@
 
 
 const debug = true
+const resume = false
 const presentation = false
 
 function log <T>(s: any, content?: T): T | undefined {
@@ -85,6 +86,7 @@ export type {
 }
 export {
 	debug,
+	resume,
 	presentation,
 	log,
 	fromMaybe,

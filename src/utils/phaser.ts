@@ -45,6 +45,7 @@ type Game = {
 	cacheName: string,
 	cache: Cache,
 	scenes:              { [key: string]: string },
+	initialScenes: string[],
 	images:              { [key: string]: {[key: string]: { key: string } } },
 	sprites:             { [key: string]: {[key: string]: { key: string, width: number, height: number } } },
 	soundsPersistant:    { [key: string]: {[key: string]: { key: string, volume: number } } },
@@ -116,7 +117,7 @@ async function deleteOldCaches( p: {
 async function openCache (p: {
 	nameOfCache: string,
 }): Promise<Cache> {
-	const cache = await caches.open( `${p.nameOfCache}-cache` )
+	const cache = await caches.open( `${p.nameOfCache}` )
 	return cache
 }
 

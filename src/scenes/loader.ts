@@ -16,7 +16,7 @@
 
 import Phaser from 'phaser'
 
-import { debug, log, onMobileDevice } from '../utils/general'
+import { debug, resume, log, onMobileDevice } from '../utils/general'
 import * as Up from '../utils/phaser'
 import { game, getState, addState, s } from '../constants'
 
@@ -66,19 +66,16 @@ export default class Loader extends Phaser.Scene {
 		resumeCurrentSceneListener( this, domElem, container, start )
 		resumeCurrentSceneListener( this, domElem, container, restart, true )
 
-		// Add all assets into the cache
-		const addAssetsToCache = async () => {
-			for ( const room of Object.values( game.images ) ) for ( const value of Object.values( room ) ) {
-				await Up.addToCache({ cache: game.cache, key: value.key })
+		// Add initial assets into the cache
+		const addInitialAssetsToCache = async () => {
+			for ( const [scene, assets] of Object.entries( game.images ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
 			}
-			for ( const room of Object.values( game.sprites ) ) for ( const value of Object.values( room ) ) {
-				await Up.addToCache({ cache: game.cache, key: value.key })
+			for ( const [scene, assets] of Object.entries( game.sprites ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
 			}
-			for ( const room of Object.values( game.sounds ) ) for ( const value of Object.values( room ) ) {
-				await Up.addToCache({ cache: game.cache, key: value.key })
-			}
-			for ( const room of Object.values( game.videos ) ) for ( const value of Object.values( room ) ) {
-				await Up.addToCache({ cache: game.cache, key: value.key })
+			for ( const [scene, assets] of Object.entries( game.sounds ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
 			}
 			for ( const category of Object.values( game.soundsPersistant ) ) for ( const value of Object.values( category ) ) {
 				await Up.addToCache({ cache: game.cache, key: value.key })
@@ -91,14 +88,14 @@ export default class Loader extends Phaser.Scene {
 				await Up.loadSpriteFromCache({ cache: game.cache, scene: this, key: spritesheet.key, width: spritesheet.width, height: spritesheet.height })
 			}
 
-			log( `cacheComplete.` )
-			this.events.emit( 'cacheComplete' )
+			log( `initial cache complete.` )
+			this.events.emit( 'initialCacheComplete' )
 		}
-		addAssetsToCache()
+		addInitialAssetsToCache()
 
-		this.events.once( 'cacheComplete', () => {
+		this.events.once( 'initialCacheComplete', () => {
 			this.load.once( Phaser.Loader.Events.COMPLETE, () => {
-				log( `All assets loaded.` )
+				log( `All initial assets loaded.` )
 				// Add ambient sounds
 				Object.values( game.soundsPersistant ).forEach( category => { Object.values( category ).forEach( value => {
 					this.sound.add( value.key )
@@ -108,7 +105,7 @@ export default class Loader extends Phaser.Scene {
 				if ( JSON.stringify( getState() ) !== JSON.stringify( game.initialState ) ) restart.classList.add( 'visible' )
 
 				log( `Persistant sounds added.` )
-				if ( debug ) resumeCurrentScene( this, domElem, container )
+				if ( resume ) resumeCurrentScene( this, domElem, container )
 			})
 			this.load.start()
 		})
