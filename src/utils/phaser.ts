@@ -130,7 +130,7 @@ async function addToCache( p: {
 	// guard
 	const inCache = await p.cache.match( p.key )
 	if (inCache) {
-		log( `Asset  "${p.key}" already loaded.` )
+		log( `Asset  "${p.key}" already in cache.` )
 		return false
 	}
 
@@ -145,17 +145,18 @@ async function loadImageFromCache (p: {
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
 
+	log( `Asset "${p.key}" queuing for loading.` )
 	let item = await p.cache.match( p.key, cacheOptions )
 	while ( item === undefined ) {
 		log( `Item   "${p.key}" not in cache. Adding it.` )
 		await p.cache.add( p.key )
-		log( `Added  "${p.key}" into cache.` )
 		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
 	const url = URL.createObjectURL( blob )
 	const image = p.scene.load.image( p.key, url )
+	log( `Asset "${p.key}" queued for loading.` )
 	return image
 }
 
@@ -167,17 +168,18 @@ async function loadSpriteFromCache (p: {
 	height: number,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
 
+	log( `Asset "${p.key}" queuing for loading.` )
 	let item = await p.cache.match( p.key, cacheOptions )
 	while ( item === undefined ) {
 		log( `Item   "${p.key}" not in cache. Adding it.` )
 		await p.cache.add( p.key )
-		log( `Added  "${p.key}" into cache.` )
 		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
 	const url = URL.createObjectURL( blob )
 	const sprite = p.scene.load.spritesheet( p.key, url, { frameWidth: p.width, frameHeight: p.height } )
+	log( `Asset "${p.key}" queued for loading.` )
 	return sprite
 }
 
@@ -187,17 +189,18 @@ async function loadAudioFromCache (p: {
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
 
+	log( `Asset "${p.key}" queuing for loading.` )
 	let item = await p.cache.match( p.key, cacheOptions )
 	while ( item === undefined ) {
 		log( `Item   "${p.key}" not in cache. Adding it.` )
 		await p.cache.add( p.key )
-		log( `Added  "${p.key}" into cache.` )
 		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
 	const url = URL.createObjectURL( blob )
 	const audio = p.scene.load.audio( p.key, [url] )
+	log( `Asset "${p.key}" queued for loading.` )
 	return audio
 }
 
@@ -207,17 +210,18 @@ async function loadVideoFromCache (p: {
 	key: string,
 }): Promise<Phaser.Loader.LoaderPlugin | undefined> {
 
+	log( `Asset "${p.key}" queuing for loading.` )
 	let item = await p.cache.match( p.key, cacheOptions )
 	while ( item === undefined ) {
 		log( `Item   "${p.key}" not in cache. Adding it.` )
 		await p.cache.add( p.key )
-		log( `Added  "${p.key}" into cache.` )
 		item = await p.cache.match( p.key, cacheOptions )
 	}
 
 	const blob = await item.blob()
 	const url = URL.createObjectURL( blob )
 	const video = p.scene.load.video( p.key, [url] )
+	log( `Asset "${p.key}" queued for loading.` )
 	return video
 }
 
@@ -225,26 +229,32 @@ async function loadAssets (p: {
 	game: Game,
 	scene: Phaser.Scene,
 }): Promise<void> {
+
 	// Images
 	if ( p.game.images[ p.scene.scene.key.toUpperCase() ] ) for (const value of Object.values( p.game.images[ p.scene.scene.key.toUpperCase() ] )) {
 		await loadImageFromCache({ cache: p.game.cache, scene: p.scene, key: value.key })
 	}
+
 	// Sprites
 	if ( p.game.sprites[ p.scene.scene.key.toUpperCase() ] ) for (const value of Object.values( p.game.sprites[ p.scene.scene.key.toUpperCase() ] )) {
 		await loadSpriteFromCache({ cache: p.game.cache, scene: p.scene, key: value.key, width: value.width, height: value.height })
 	}
+
 	// Sounds
 	if ( p.game.sounds[ p.scene.scene.key.toUpperCase() ] ) for (const value of Object.values( p.game.sounds[ p.scene.scene.key.toUpperCase() ] )) {
 		await loadAudioFromCache({ cache: p.game.cache, scene: p.scene, key: value.key })
 	}
+
 	// Videos
 	if ( p.game.videos[ p.scene.scene.key.toUpperCase() ] ) for (const value of Object.values( p.game.videos[ p.scene.scene.key.toUpperCase() ] )) {
 		await loadVideoFromCache({ cache: p.game.cache, scene: p.scene, key: value.key })
 	}
+
 	// Cleanup
 	p.scene.events.on( Phaser.Scenes.Events.SHUTDOWN, () => {
 		unloadAssets({ scene: p.scene })
 	})
+
 	// Load audio
 	p.scene.load.on( Phaser.Loader.Events.COMPLETE, () => {
 		// Add Sounds
@@ -252,8 +262,11 @@ async function loadAssets (p: {
 			p.scene.sound.add( value.key )
 		}
 		p.scene.events.emit( ASSETSLOADED )
+		log( `All assets loaded for scene ${p.scene.scene.key}.` )
 	})
+
 	p.scene.load.start()
+	log( `Loading of assets started for scene ${p.scene.scene.key}.` )
 	return
 }
 
@@ -403,6 +416,23 @@ function exitTo (p: {
 	addState({ game: p.game, change: { previousScene: p.scene.scene.key, currentScene: p.nextScene } })
 
 	const nextScene = p.scene.scene.get( p.nextScene )
+
+	// loadAssets({ game: p.game, scene: nextScene })
+	// nextScene.events.once( ASSETSLOADED, () => {
+	//
+	// 	p.scene.scene.sleep( nextScene )
+	// 	p.scene.scene.manager.processQueue()
+	// 	log( "Transition" )
+	// 	p.scene.scene.transition({ target: p.nextScene, duration: p.game.config.durationSceneTransition, moveAbove: true,
+	// 		onStart: () => {
+	// 			nextScene.cameras.cameras.forEach( (camera: Phaser.Cameras.Scene2D.Camera) => camera.setAlpha( 0 ) )
+	// 		},
+	// 		onUpdate: () => {
+	// 			nextScene.cameras.cameras.forEach( (camera: Phaser.Cameras.Scene2D.Camera) => camera.setAlpha( p.scene.scene.transitionProgress ) )
+	// 		},
+	// 	})
+	// })
+
 	p.scene.scene.transition({ target: p.nextScene, duration: p.game.config.durationSceneTransition, moveAbove: true,
 		onStart: () => {
 			nextScene.cameras.cameras.forEach( (camera: Phaser.Cameras.Scene2D.Camera) => camera.setAlpha( 0 ) )

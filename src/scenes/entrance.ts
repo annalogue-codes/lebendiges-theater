@@ -16,7 +16,7 @@
 import Phaser from 'phaser'
 
 import { game, getState, addState, w, h, s } from '../constants'
-import { debug } from '../utils/general'
+import { debug, log } from '../utils/general'
 import * as Up from '../utils/phaser'
 import * as Set from '../utils/set'
 import * as Inventory from '../utils/inventory'
@@ -48,7 +48,6 @@ export default class Entrance extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Inventory.load({ game: game, scene: this })
 		Up.loadAssets({ game: game, scene: this })
 	}
 
@@ -58,6 +57,7 @@ export default class Entrance extends Phaser.Scene {
 
 
 function go ( scene: Phaser.Scene ): void {
+	log( `Go called for ${scene.scene.key}!` )
 	// Game has started
 	addState({ hasStarted: true })
 

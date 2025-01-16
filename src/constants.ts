@@ -35,7 +35,7 @@ const INITIALSCENE = 'fassade'
 // Non-adaptive asset quality
 const WIDTH  = 1600
 const HEIGHT =  900
-const SCALE  =    2
+const SCALE  = false ? 1 : 2
 
 const currentCacheName = `${NAMEOFGAME}-${VERSION}`
 const cache = await Up.openCache({ nameOfCache: currentCacheName })

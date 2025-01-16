@@ -93,6 +93,21 @@ export default class Loader extends Phaser.Scene {
 		}
 		addInitialAssetsToCache()
 
+		// Add remaining assets into the cache
+		const addRemainingAssetsToCache = async () => {
+			for ( const [scene, assets] of Object.entries( game.images ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
+			}
+			for ( const [scene, assets] of Object.entries( game.sprites ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
+			}
+			for ( const [scene, assets] of Object.entries( game.sounds ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
+				await Up.addToCache({ cache: game.cache, key: asset.key })
+			}
+
+			log( `remaining cache complete.` )
+		}
+
 		this.events.once( 'initialCacheComplete', () => {
 			this.load.once( Phaser.Loader.Events.COMPLETE, () => {
 				log( `All initial assets loaded.` )
@@ -101,10 +116,13 @@ export default class Loader extends Phaser.Scene {
 					this.sound.add( value.key )
 				})})
 
+				addRemainingAssetsToCache()
+
 				start.classList.add( 'visible' )
 				if ( JSON.stringify( getState() ) !== JSON.stringify( game.initialState ) ) restart.classList.add( 'visible' )
 
 				log( `Persistant sounds added.` )
+
 				if ( resume ) resumeCurrentScene( this, domElem, container )
 			})
 			this.load.start()

@@ -56,6 +56,8 @@ export default class Foyer extends Phaser.Scene {
 }
 
 function go ( scene: Phaser.Scene ): void {
+	log( `Go called for ${scene.scene.key}!` )
+
 	// Ambience
 	Up.addBackground({ game: game, scene: scene, key: game.images.FOYER.BACKGROUND.key })
 	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.JAZZ.key, volume: game.soundsPersistant.AMBIENCE.JAZZ.volume, fadeIn: 3000 })
