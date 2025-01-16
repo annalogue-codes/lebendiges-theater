@@ -112,7 +112,7 @@ function go ( scene: Phaser.Scene ): void {
 	// 	// console.log( ctrl )
 	// })
 	berlin.on( 'atze-inputzoom', ( zoomDelta: number ) => {
-		camera.setZoom( clamp(1, camera.zoom - 0.01 * zoomDelta * camera.zoom, 8) )
+		camera.setZoom( clamp(1, camera.zoom - 0.00125 * zoomDelta * camera.zoom, 8) )
 		setCameraScrollToBoundaries()
 	})
 	berlin.on( 'atze-inputzoomandpan', ( zoomFactor: number, panX: number, panY: number ) => {

@@ -502,16 +502,18 @@ function addGestureSupport ( object: Phaser.GameObjects.GameObject ): void {
 		log( `pointer moved: ${pointer.id}` )
 		const pointer1 = object.scene.input.pointer1
 		const pointer2 = object.scene.input.pointer2
-		if ( !pointer1.isDown && !pointer2.isDown ) {
-			return
-		}
+		const mousePointer = object.scene.input.mousePointer
 
-		const emitPanFromOnePointer = () => {
-			const panX = object.scene.input.activePointer.position.x - object.scene.input.activePointer.prevPosition.x
-			const panY = object.scene.input.activePointer.position.y - object.scene.input.activePointer.prevPosition.y
+		if ( !pointer1.isDown && !pointer2.isDown && !mousePointer.leftButtonDown ) return
+
+		const emitPanFromOnePointer = ( pointer: Phaser.Input.Pointer ) => {
+			log( `one pointer moved: ${pointer.id}` )
+			const panX = pointer.position.x - pointer.prevPosition.x
+			const panY = pointer.position.y - pointer.prevPosition.y
 			emitZoomAndPan( object, 1, panX, panY )
 		}
 		const emitZoomAndPanFromTwoPointers = () => {
+			log( `two pointers moved.` )
 			const oldDist = Math.sqrt( (pointer1.prevPosition.x - pointer2.prevPosition.x)**2 + (pointer1.prevPosition.y - pointer2.prevPosition.y)**2 )
 			const newDist = Math.sqrt( (pointer1.position.x - pointer2.position.x)**2 + (pointer1.position.y - pointer2.position.y)**2 )
 			const zoomFactor = newDist / oldDist
@@ -527,16 +529,20 @@ function addGestureSupport ( object: Phaser.GameObjects.GameObject ): void {
 			log( `nextY1: ${pointer1.position.y}` )
 			log( `nextX2: ${pointer2.position.x}` )
 			log( `nextY2: ${pointer2.position.y}` )
-			const panX = newMidX - oldMidX
-			const panY = newMidY - oldMidY
+			const panX = (newMidX - oldMidX) / 2
+			const panY = (newMidY - oldMidY) / 2
 			emitZoomAndPan( object, zoomFactor, panX, panY )
 		}
 		if ( pointer1.isDown && pointer2.isDown ) {
 			log( 'both' )
 			emitZoomAndPanFromTwoPointers()
-		} else if ( object.scene.input.activePointer.isDown ){
+		// } else if ( object.scene.input.activePointer.isDown ){
+		} else if ( pointer1.isDown ) {
 			log( 'only one' )
-			emitPanFromOnePointer()
+			emitPanFromOnePointer( pointer1 )
+		} else if ( mousePointer.leftButtonDown() ) {
+			log( 'only one' )
+			emitPanFromOnePointer( mousePointer )
 		}
 	})
 }
