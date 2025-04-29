@@ -16,8 +16,11 @@
 import Phaser from 'phaser'
 
 import { game, w, h, s } from '../constants'
-import { debug, log, onMobileDevice, onTablet } from '../utils/general'
-import * as Up from '../utils/phaser'
+import { debug, onMobileDevice, onTablet } from '../utils/general'
+import * as Up from '../utils/phaser/common'
+import * as Audio from '../utils/phaser/audio'
+import * as Inventory from '../utils/inventory'
+import { addExit } from '../utils/phaser/exit'
 
 /* Main part */
 
@@ -31,7 +34,7 @@ const videoScale  = ( onMobileDevice() && !onTablet() ) ? 0.95 : 1.2
 export default class Backstage extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.BACKSTAGE )
+		super( game.scenes.Backstage )
 	}
 
 	// init() {
@@ -49,7 +52,8 @@ export default class Backstage extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Inventory.load({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {//
@@ -58,14 +62,14 @@ export default class Backstage extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	//Ambience
-	scene.add.rectangle( 0, 0, w, h, 0xccaa99).setOrigin( 0 ).setDepth( 0 )
-	Up.addBackground({ game: game, scene: scene, key: game.images.BACKSTAGE.BACKGROUND.key }).setDepth( 20 )
-	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume, fadeIn: 3000 })
+	const background = scene.add.rectangle( 0, 0, w, h, 0xccaa99).setOrigin( 0 ).setDepth( 0 )
+	Up.addBackground({ game: game, scene: scene, key: game.images.backstage.background.key }).setDepth( 20 )
+	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.lofi.key, volume: game.soundsPersistant.ambience.lofi.volume, fadeIn: 3000 })
 
 	// Sounds
-	const switchDouble = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHDOUBLE })
-	const switchLarge  = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHLARGE  })
-	const switchSmall  = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHSMALL  })
+	const switchDouble = Audio.add({ scene: scene, keyAndVolume: game.sounds.backstage.switchdouble })
+	const switchLarge  = Audio.add({ scene: scene, keyAndVolume: game.sounds.backstage.switchlarge  })
+	const switchSmall  = Audio.add({ scene: scene, keyAndVolume: game.sounds.backstage.switchsmall  })
 
 	// Objects
 	const maske           = scene.add.video(340 * s, 210 * s, 'maske'           )
@@ -132,15 +136,15 @@ function go ( scene: Phaser.Scene ): void {
 		})
 	}))
 
-	const knobProgram = scene.add.sprite( 604 * s,  91 * s, game.sprites.BACKSTAGE.KNOBPROGRAM.key )
-	const knobYellow1 = scene.add.sprite( 567 * s, 240 * s, game.sprites.BACKSTAGE.KNOBYELLOW1.key )
-	const knobYellow2 = scene.add.sprite( 604 * s, 240 * s, game.sprites.BACKSTAGE.KNOBYELLOW2.key )
-	const knobRed     = scene.add.sprite( 642 * s, 240 * s, game.sprites.BACKSTAGE.KNOBRED.key     )
+	const knobProgram = scene.add.sprite( 604 * s,  91 * s, game.sprites.backstage.knobprogram.key )
+	const knobYellow1 = scene.add.sprite( 567 * s, 240 * s, game.sprites.backstage.knobyellow1.key )
+	const knobYellow2 = scene.add.sprite( 604 * s, 240 * s, game.sprites.backstage.knobyellow2.key )
+	const knobRed     = scene.add.sprite( 642 * s, 240 * s, game.sprites.backstage.knobred.key     )
 	const knobs = [ knobProgram, knobYellow1, knobYellow2, knobRed ]
 	knobs.forEach( knob => knob.setDepth( 25 ).setInteractive() )
 
 	knobProgram.on( Phaser.Input.Events.POINTER_UP, () => {
-		Up.audio.play({ scene: scene, audio: switchDouble })
+		Audio.play( switchDouble )
 		toggleProgramm()
 	})
 
@@ -164,10 +168,10 @@ function go ( scene: Phaser.Scene ): void {
 		if ( rewinding ) scene.time.removeEvent( rewinding )
 
 		if ( currentKnobYellow1 == 0 ) {
-			Up.audio.play({ scene: scene, audio: switchLarge })
+			Audio.play( switchLarge )
 			return
 		}
-		Up.audio.play({ scene: scene, audio: switchSmall })
+		Audio.play( switchSmall )
 		resume( videos[currentVideo] )
 		rewind( videos[currentVideo], currentKnobYellow1 )
 	})
@@ -177,9 +181,9 @@ function go ( scene: Phaser.Scene ): void {
 		currentKnobYellow2 = ( currentKnobYellow1 !== 0 ) ? 1 : (currentKnobYellow2 + 1) % 3
 		knobYellow2.setFrame( currentKnobYellow2 )
 		if ( currentKnobYellow2 == 0 ) {
-			Up.audio.play({ scene: scene, audio: switchLarge })
+			Audio.play( switchLarge )
 		} else {
-			Up.audio.play({ scene: scene, audio: switchSmall })
+			Audio.play( switchSmall )
 		}
 		resume( videos[currentVideo] )
 		videos[currentVideo].setPlaybackRate( currentKnobYellow2 + 1 )
@@ -243,6 +247,7 @@ function go ( scene: Phaser.Scene ): void {
 		})
 		if ( currentVideo == videos.length ) {
 			knobProgram.setFrame( (currentVideo + 2) % (videos.length + 1) )
+			background.fillColor = 0x000000
 			currentVideo = (currentVideo + 1) % (videos.length + 1)
 			const video = videos[currentVideo]
 			video
@@ -267,7 +272,12 @@ function go ( scene: Phaser.Scene ): void {
 		knobProgram.setFrame( (currentVideo + 2) % (videos.length + 1) )
 		currentVideo = (currentVideo + 1) % (videos.length + 1)
 
-		if ( currentVideo == videos.length ) return
+		if ( currentVideo == videos.length ) {
+			background.fillColor = 0xccaa99
+			return
+		}
+
+		background.fillColor = 0x000000
 		const nextVideo = videos[currentVideo]
 		nextVideo
 			.setVolume( 0.001 )
@@ -289,10 +299,10 @@ function go ( scene: Phaser.Scene ): void {
 
 	function togglePower () {
 		if ( videos[currentVideo].isPlaying() ) {
-			Up.audio.play({ scene: scene, audio: switchSmall })
+			Audio.play( switchSmall )
 			pause( videos[currentVideo] )
 		} else {
-			Up.audio.play({ scene: scene, audio: switchLarge })
+			Audio.play( switchLarge )
 			resume( videos[currentVideo] )
 		}
 	}
@@ -305,7 +315,7 @@ function go ( scene: Phaser.Scene ): void {
 
 		currentTint = (currentTint + 1) % (tints.length + 1)
 		if ( currentTint === tints.length ) {
-			Up.audio.play({ scene: scene, audio: switchLarge })
+			Audio.play( switchLarge )
 			currentKnobRed = 0
 			knobRed.setFrame( 0 )
 			videos[currentVideo].clearTint()
@@ -313,25 +323,33 @@ function go ( scene: Phaser.Scene ): void {
 		}
 		currentKnobRed = (currentKnobRed % 2) + 1
 		knobRed.setFrame( currentKnobRed )
-		Up.audio.play({ scene: scene, audio: switchSmall })
+		Audio.play( switchSmall )
 		videos[currentVideo].tint = tints[currentTint]
 	}
 
+	// Stray tems
+	if ( !game.state.get().inventory.includes('wunschmaschine') ) {
+		const chest = Inventory.createChest({ game, scene })
+
+		const wunschmaschine = scene.add.image( 725 * s, 323 * s, game.images.backstage.wunschmaschine.key )
+			.setRotation( 0.2 )
+			.setDepth(25)
+			.setInteractive()
+		wunschmaschine.on( 'pointerup', () => { chest.foundItem({ item: 'wunschmaschine', image: wunschmaschine }) })
+	}
 
 	// Exits
 	const foyer = scene.add.rectangle( 0, 0, 100 * s, h, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: foyer,
-		nextScene: game.scenes.FOYER,
+		nextScene: game.scenes.Foyer,
 		// soundsToKeep: [
-		// 	game.soundsPERSISTANT.AMBIENCE.CITYRAIN,
-		// 	game.soundsPERSISTANT.AMBIENCE.JAZZ,
+		// 	game.soundsPersistant.ambience.cityrain,
+		// 	game.soundsPersistant.ambience.jazz,
 		// ],
 	})
-
-	log(`${scene.scene.key} created.`)
 }
 

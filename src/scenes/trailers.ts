@@ -15,23 +15,25 @@
 
 import Phaser from 'phaser'
 
+import * as Up from '../utils/phaser/common'
+
+import { addExit, exitTo } from '../utils/phaser/exit'
 import { game, w, h, s } from '../constants'
-import { debug, log, onMobileDevice } from '../utils/general'
-import * as Up from '../utils/phaser'
+import { debug, onMobileDevice } from '../utils/general'
 
 /* Main part */
 
 // const lofiVolume = 0.4
 
-const videoWidth = onMobileDevice() ? 426 : 640
-const videoHeight = onMobileDevice() ? 240 : 360
-const videoScale = onMobileDevice() ? 0.95 : 1.2
+// const videoWidth = onMobileDevice() ? 426 : 640
+// const videoHeight = onMobileDevice() ? 240 : 360
+// const videoScale = onMobileDevice() ? 0.95 : 1.2
 
 
 export default class Trailers extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.TRAILERS )
+		super( game.scenes.Trailers )
 	}
 
 	// init() {
@@ -42,7 +44,7 @@ export default class Trailers extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {//
@@ -52,20 +54,20 @@ export default class Trailers extends Phaser.Scene {
 function go ( scene: Phaser.Scene ): void {
 	//Ambience
 	scene.add.rectangle( 0, 0, w, h, 0xccaa99).setOrigin( 0 ).setDepth( 0 )
-	Up.addBackground({ game: game, scene: scene, key: game.images.TRAILERS.BACKGROUND.key }).setDepth( 20 )
+	Up.addBackground({ game: game, scene: scene, key: game.images.trailers.background.key }).setDepth( 20 )
 
 	// Sounds
-	// const switchDouble = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHDOUBLE })
-	// const switchLarge  = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHLARGE  })
-	// const switchSmall  = Up.audio.add({ scene: scene, sound: game.sounds.BACKSTAGE.SWITCHSMALL  })
+	// const switchDouble = Up.audio.add({ scene: scene, sound: game.sounds.backstage.switchdouble })
+	// const switchLarge  = Up.audio.add({ scene: scene, sound: game.sounds.backstage.switchlarge  })
+	// const switchSmall  = Up.audio.add({ scene: scene, sound: game.sounds.backstage.switchsmall  })
 
 	// Objects
-	// const button1a = scene.add.image( 50 * s, 440 * s, game.images.TRAILERS.BUTTON1A)
-	// const button1b = scene.add.image( 50 * s, 440 * s, game.images.TRAILERS.BUTTON1B)
-	// const button2a = scene.add.image( 150 * s, 440 * s, game.images.TRAILERS.BUTTON2A)
-	// const button2b = scene.add.image( 150 * s, 440 * s, game.images.TRAILERS.BUTTON2B)
-	// const button3a = scene.add.image( 250 * s, 440 * s, game.images.TRAILERS.BUTTON3A)
-	// const button3b = scene.add.image( 250 * s, 440 * s, game.images.TRAILERS.BUTTON3B)
+	// const button1a = scene.add.image( 50 * s, 440 * s, game.images.trailers.button1A)
+	// const button1b = scene.add.image( 50 * s, 440 * s, game.images.trailers.button1B)
+	// const button2a = scene.add.image( 150 * s, 440 * s, game.images.trailers.button2A)
+	// const button2b = scene.add.image( 150 * s, 440 * s, game.images.trailers.button2B)
+	// const button3a = scene.add.image( 250 * s, 440 * s, game.images.trailers.button3A)
+	// const button3b = scene.add.image( 250 * s, 440 * s, game.images.trailers.button3B)
 
 	const scale = 1.12
 	const embeddedYoutube = `
@@ -93,10 +95,10 @@ function go ( scene: Phaser.Scene ): void {
 	exits.forEach( exit => {
 		exit.addEventListener( 'click', () => {
 			container?.classList.add('fade-out')
-			Up.exitTo({
+			exitTo({
 				game: game,
 				scene: scene,
-				nextScene: game.scenes.FOYER,
+				nextScene: game.scenes.Foyer,
 			})
 		})
 	})
@@ -105,13 +107,11 @@ function go ( scene: Phaser.Scene ): void {
 	// Exits
 	const foyer = scene.add.rectangle( 0, 0, 100 * s, h, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: foyer,
-		nextScene: game.scenes.FOYER,
+		nextScene: game.scenes.Foyer,
 	})
-
-	log(`${scene.scene.key} created.`)
 }
 

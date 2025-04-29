@@ -14,9 +14,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { log, randomElementOf } from '../utils/general'
-import * as Up from '../utils/phaser'
+
+import * as Up from '../utils/phaser/common'
+import * as Audio from '../utils/phaser/audio'
+import * as Exit from '../utils/phaser/exit'
+
 import { game } from '../constants'
+import { randomElementOf } from '../utils/math'
 
 
 /* Keys for animations */
@@ -56,7 +60,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 
 	const startPath = new Phaser.Curves.Path( startX, startY )
 	const catFullScale = 0.8
-	const follower = new Phaser.GameObjects.PathFollower( scene, startPath, startX, startY, game.sprites.CAT.CAT.key, 18 )
+	const follower = new Phaser.GameObjects.PathFollower( scene, startPath, startX, startY, game.sprites.cat.cat.key, 18 )
 		.addToDisplayList()
 		.addToUpdateList()
 		.setFlipX( true )
@@ -67,7 +71,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 4,
 		repeat: -1,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNumbers( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNumbers( game.sprites.cat.cat.key, {
 			start: 18,
 			end: 18,
 		}),
@@ -78,7 +82,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		repeat: -1,
 		yoyo: true,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNames( game.sprites.CAT.CATSLEEPING.key, {
+		frames: scene.anims.generateFrameNames( game.sprites.cat.catsleeping.key, {
 			start: 0,
 			end: 3,
 		}),
@@ -89,7 +93,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 6,
 		repeat: 0,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNumbers( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNumbers( game.sprites.cat.cat.key, {
 			start: 20,
 			end: 23,
 		}),
@@ -99,7 +103,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 6,
 		repeat: 0,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNumbers( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNumbers( game.sprites.cat.cat.key, {
 			start: 13,
 			end: 18,
 		}),
@@ -109,7 +113,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 10,
 		repeat: -1,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNumbers( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNumbers( game.sprites.cat.cat.key, {
 			start: 0,
 			end: 11,
 		}),
@@ -119,7 +123,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 5,
 		repeat: -1,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNames( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNames( game.sprites.cat.cat.key, {
 			start: 58,
 			end: 62,
 		}),
@@ -129,7 +133,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 5,
 		repeat: 0,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNames( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNames( game.sprites.cat.cat.key, {
 			start: 52,
 			end: 56,
 		}),
@@ -140,11 +144,11 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		repeat: 0,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNames( game.sprites.CAT.CAT.key, {
+			...scene.anims.generateFrameNames( game.sprites.cat.cat.key, {
 				start: 56,
 				end: 55,
 			}),
-			...scene.anims.generateFrameNames( game.sprites.CAT.CAT.key, {
+			...scene.anims.generateFrameNames( game.sprites.cat.cat.key, {
 				start: 53,
 				end: 54,
 			}),
@@ -155,7 +159,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		frameRate: 5,
 		repeat: 0,
 		skipMissedFrames: true,
-		frames: scene.anims.generateFrameNumbers( game.sprites.CAT.CAT.key, {
+		frames: scene.anims.generateFrameNumbers( game.sprites.cat.cat.key, {
 			start: 64,
 			end: 69,
 		}),
@@ -166,7 +170,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 	follower.setInteractive()
 
 	// scene.sys.events.once( Up.SHUTTINGDOWN, () => {
-	// 	Up.sound.fadeOut({
+	// 	Audio.fadeOut({
 	// 		scene: scene,
 	// 		sounds: [ purr ],
 	// 		duration: 500,
@@ -178,10 +182,10 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		follower: follower,
 		fullScale: catFullScale,
 		sounds: {
-			meow:         game.soundsPersistant.CAT.MEOW,
-			meowmeowmeow: game.soundsPersistant.CAT.MEOWMEOWMEOW,
-			attention:    game.soundsPersistant.CAT.ATTENTION,
-			purr:         game.soundsPersistant.CAT.PURR,
+			meow:         game.soundsPersistant.cat.meow,
+			meowmeowmeow: game.soundsPersistant.cat.meowmeowmeow,
+			attention:    game.soundsPersistant.cat.attention,
+			purr:         game.soundsPersistant.cat.purr,
 		},
 		randomSounds: [],
 		soundTimeInterval: [10, 25],
@@ -190,7 +194,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		position: undefined,
 	}
 
-	const purr = cat.follower.scene.sound.get( game.soundsPersistant.CAT.PURR.key ) as Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
+	const purr = cat.follower.scene.sound.get( game.soundsPersistant.cat.purr.key ) as Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
 	purr.on('complete', () => {
 		follower.off('pointerover')
 		follower.once('pointerover', () => {
@@ -208,7 +212,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		purr.play({ volume: 0.7 })
 	})
 	follower.on('pointerout', () => {
-		Up.audio.fadeOut({
+		Audio.fadeOut({
 			scene: scene,
 			sounds: [ purr ],
 			duration: 500,
@@ -238,8 +242,8 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 	follower.on( NEXTMOTION, () => {
 		playNextMotion({ cat: cat })
 	})
-	scene.events.off( Up.SHUTTINGDOWN )
-	scene.events.once( Up.SHUTTINGDOWN, () => {
+	scene.events.off( Exit.SHUTTINGDOWN )
+	scene.events.once( Exit.SHUTTINGDOWN, () => {
 		follower.off( NEXTMOTION )
 		stopRandomCatSounds({ cat: cat })
 	})
@@ -248,7 +252,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 }
 
 const playNextRandomCatSound = (p: { cat: Cat }) => {
-	log( 'follower: nextsound' )
+	const scene = p.cat.follower.scene
 	p.cat.follower.off( NEXTSOUND )
 
 	const next = randomElementOf( p.cat.randomSounds )
@@ -257,7 +261,9 @@ const playNextRandomCatSound = (p: { cat: Cat }) => {
 	p.cat.follower.once( NEXTSOUND, () => {
 		playNextRandomCatSound({ cat: p.cat })
 	})
-	if ( !p.cat.mute ) p.cat.follower.scene.sound.get( next.key ).play({ volume: next.volume })
+	if ( scene.game.hasFocus && scene.game.isRunning && !p.cat.mute ) {
+		p.cat.follower.scene.sound.get( next.key ).play({ volume: next.volume })
+	}
 	const [ tmin, tmax ] = p.cat.soundTimeInterval
 	const rndSeconds = Phaser.Math.Between( tmin, tmax )
 	p.cat.follower.scene.time.delayedCall( rndSeconds * 1000, () => {
@@ -265,7 +271,6 @@ const playNextRandomCatSound = (p: { cat: Cat }) => {
 	})
 }
 const playRandomCatSounds = (p: { cat: Cat, preDelay?: boolean }) => {
-	log( 'playRandomCatSounds' )
 	p.cat.follower.off( NEXTSOUND )
 
 	if ( !p.cat.randomSounds.length ) return
@@ -283,12 +288,10 @@ const playRandomCatSounds = (p: { cat: Cat, preDelay?: boolean }) => {
 	}
 }
 const stopRandomCatSounds = (p: { cat: Cat }) => {
-	log( 'stopRandomCatSounds' )
 	p.cat.follower.off( NEXTSOUND )
 }
 
 const playNextMotion = (p: { cat: Cat }) => {
-	log('next motion')
 	const nextMotion = randomElementOf( p.cat.nextMotions )
 	p.cat.follower.anims.stop()
 	nextMotion({ cat: p.cat })
@@ -296,7 +299,6 @@ const playNextMotion = (p: { cat: Cat }) => {
 
 const idle: Motion = async ( p ) => {
 	// p.cat.follower.removeListener( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + CATIDLE )
-	log('idle started')
 	p.cat.follower.play({ key: CATIDLE })
 
 	const duration = p.duration ? p.duration : Phaser.Math.Between( 100, 5000 )

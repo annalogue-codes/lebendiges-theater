@@ -15,11 +15,14 @@
 
 import Phaser from 'phaser'
 
-import { game, w, h, s } from '../constants'
-import { debug, log } from '../utils/general'
-import * as Ug from '../utils/general'
-import * as Up from '../utils/phaser'
+import * as Up from '../utils/phaser/common'
 import * as Cat from '../sprites/cat'
+
+import { game, s } from '../constants'
+import { randomInt } from '../utils/math'
+import * as Audio from '../utils/phaser/audio'
+import { debug } from '../utils/general'
+import { addExit } from '../utils/phaser/exit'
 
 /* Main part */
 
@@ -29,7 +32,7 @@ import * as Cat from '../sprites/cat'
 export default class Stagedoor extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.STAGEDOOR )
+		super( game.scenes.Stagedoor )
 	}
 
 	// init() {//
@@ -40,7 +43,7 @@ export default class Stagedoor extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {//
@@ -49,12 +52,12 @@ export default class Stagedoor extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	//Ambience
-	Up.addBackground({ game: game, scene: scene, key: game.images.STAGEDOOR.BACKGROUND.key })
-	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume })
-	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPERSISTANT.AMBIENCE.JAZZ.key, volume: getState().entranceopen ? jazzVolume : 0 })
+	Up.addBackground({ game: game, scene: scene, key: game.images.stagedoor.background.key })
+	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.lofi.key, volume: game.soundsPersistant.ambience.lofi.volume })
+	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.jazz.key, volume: game.state.get().entranceopen ? jazzVolume : 0 })
 
 	// Sounds
-	const welcome = Up.audio.add({ scene: scene, sound: game.sounds.STAGEDOOR.welcome })
+
 	// Objects
 	// Cat
 	const cat = Cat.newCat( scene, 375 * s, 305 * s, 0.8 )
@@ -71,9 +74,34 @@ function go ( scene: Phaser.Scene ): void {
 	// Bouncer
 	const bouncer = scene.add.rectangle( 485 * s, 100 * s, 160 * s, 350 * s, 0x553366 )
 		.setOrigin( 0 ).setDepth( 25 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	scene.add.image(                      495 * s, 118 * s, game.images.STAGEDOOR.BOUNCER.key ).setOrigin( 0 ).setDepth( 10 )
-	const bouncerHead = scene.add.sprite( 514 * s, 115 * s, game.sprites.STAGEDOOR.BOUNCERHEAD.key ).setOrigin( 0 ).setDepth( 11 )
-	const bouncerArm  = scene.add.sprite( 374 * s, 226 * s, game.sprites.STAGEDOOR.BOUNCERARM.key, 3 ).setOrigin( 0 ).setDepth( 11 )
+	scene.add.image(                      495 * s, 118 * s, game.images.stagedoor.bouncer.key ).setOrigin( 0 ).setDepth( 10 )
+	const bouncerHead = scene.add.sprite( 514 * s, 115 * s, game.sprites.stagedoor.bouncerhead.key ).setOrigin( 0 ).setDepth( 11 )
+	const bouncerArm  = scene.add.sprite( 720, 460, game.sprites.stagedoor.bouncerarm.key, 3 ).setOrigin( 0 ).setDepth( 9 )
+
+	bouncerArm.anims.create({
+		key: 'sway',
+		frameRate: 6,
+		repeat: 0,
+		skipMissedFrames: true,
+		frames: [
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerarm.key, {
+				start: 1, end: 4,
+			}),
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerarm.key, {
+				frames: Array(6).fill(4),
+			}),
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerarm.key, {
+				start: 3, end: 0,
+			}),
+		],
+	})
+	bouncerArm.off( Phaser.Animations.Events.ANIMATION_COMPLETE )
+	bouncerArm.on(  Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+		const delay = randomInt( 1000, 16000 )
+		scene.time.delayedCall( delay, () => { bouncerArm.play( 'sway' ) } )
+	})
+	scene.time.delayedCall( 1500, () => { bouncerArm.play( 'sway' ) } )
+
 	bouncerHead.anims.create({
 		key: 'blink',
 		frameRate: 6,
@@ -81,7 +109,7 @@ function go ( scene: Phaser.Scene ): void {
 		yoyo: true,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 0, end: 3,
 			}),
 		],
@@ -93,7 +121,7 @@ function go ( scene: Phaser.Scene ): void {
 		yoyo: true,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 0, end: 2,
 			}),
 		],
@@ -104,72 +132,98 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 7, end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 5, end: 7,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				frames: [ 5, 4, 6, 5, 4, 7 ],
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 7, end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				start: 5, end: 7,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				frames: [ 5, 4, 6, 5, 4, 7 ],
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stagedoor.bouncerhead.key, {
 				frames: [ 1, 2, 3, 2, 1 ],
 			}),
 		],
 	})
 	let pendingBlink: Phaser.Time.TimerEvent
-	bouncerHead.off( Phaser.Animations.Events.ANIMATION_COMPLETE )
-	bouncerHead.on(  Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-		const delay = Ug.randomInt( 1000, 12000 )
+	function bouncerBlink () {
+		pendingBlink?.remove()
+		const delay = randomInt( 1000, 12000 )
 		const dice = Math.random()
 		const key = ( dice < 0.7 ) ? 'blink' : 'blink-quick'
+		bouncerHead.off( 'animationcomplete' ).on( 'animationcomplete', () => bouncerBlink() )
 		pendingBlink = scene.time.delayedCall( delay, () => { bouncerHead.play({key: key, repeat: Math.round(1 - dice) }) } )
-	})
-	bouncer.off( Phaser.Input.Events.POINTER_UP )
-	bouncer.on( Phaser.Input.Events.POINTER_UP, () => {
-		pendingBlink?.remove()
-		bouncerHead.play( 'talk' )
-		Up.audio.play({ scene: scene, audio: welcome })
-		// welcome.sound.play()
-		welcome.sound.on( Phaser.Sound.Events.COMPLETE, () => {
-			bouncerHead?.stop().setFrame( 0 )
-		})
-	})
-	bouncerHead.play( 'blink' )
+	}
+	bouncerHead.off( 'animationcomplete' ).on( 'animationcomplete', () => bouncerBlink() )
 
-	bouncerArm.anims.create({
-		key: 'sway',
-		frameRate: 6,
-		repeat: 0,
-		skipMissedFrames: true,
-		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERARM.key, {
-				start: 1, end: 4,
-			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERARM.key, {
-				frames: Array(6).fill(4),
-			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGEDOOR.BOUNCERARM.key, {
-				start: 3, end: 0,
-			}),
-		],
-	})
-	bouncerArm.off( Phaser.Animations.Events.ANIMATION_COMPLETE )
-	bouncerArm.on(  Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-		const delay = Ug.randomInt( 1000, 16000 )
-		scene.time.delayedCall( delay, () => { bouncerArm.play( 'sway' ) } )
-	})
-	scene.time.delayedCall( 1500, () => { bouncerArm.play( 'sway' ) } )
+
+	let currentTopic = 'willkommen'
+	bouncer.off('pointerup').on( 'pointerup', () => { bouncerSpeak( currentTopic ) })
+
+	// IMPROVE: generalize this function and move it into a utility module.
+	// BETTER: write a "character" module to provide a character generater function.
+	// The returned character has a speak method.
+	let bouncerIsTalking = false
+	function bouncerSpeak ( topic: string ) {
+
+		if ( bouncerIsTalking ) return
+
+		bouncerIsTalking = true
+		pendingBlink?.remove()
+		const { sound, volume } = Audio.get({ scene: scene, keyAndVolume: game.sounds.stagedoor[ topic ] })
+		bouncerHead.play( 'talk' )
+		Audio.play({ sound, volume })
+		sound.off( 'complete' )
+		sound.once( 'complete', () => {
+			bouncerIsTalking = false
+			bouncerHead.stop().setFrame( 0 )
+			bouncerBlink()
+		})
+	}
+
+	const numberOfPeople = game.state.get().peopleFound.length
+	console.log( `people: ${game.state.get().peopleFound}`)
+	if ( numberOfPeople === 0 ) {
+		scene.time.delayedCall( 1500, () => bouncerSpeak( 'willkommen' ) )
+		// IMPROVE: make a better way to chain this.
+		bouncerHead.once( 'animationstop', () => {
+			bouncerSpeak( 'buehneleer' )
+			bouncerHead.once( 'animationstop', () => {
+				currentTopic = 'spielzimmer'
+				scene.time.delayedCall( 500, () => bouncerSpeak( 'spielzimmer' ) )
+			})
+		})
+	} else if ( numberOfPeople < 4 ) {
+
+		currentTopic = 'ersteschauspieler'
+		scene.time.delayedCall( 1500, () => bouncerSpeak( 'ersteschauspieler' ) )
+
+	} else if ( numberOfPeople < 8 ) {
+
+		currentTopic = 'langsamvoll'
+		scene.time.delayedCall( 1500, () => bouncerSpeak( 'langsamvoll' ) )
+		bouncerHead.once( 'animationstop', () => {
+			bouncerSpeak( 'vielspass' )
+		})
+
+	} else {
+
+		currentTopic = 'allewiederda'
+		scene.time.delayedCall( 1500, () => bouncerSpeak( 'allewiederda' ) )
+		bouncerHead.once( 'animationstop', () => {
+			bouncerSpeak( 'vielspass' )
+		})
+	}
 
 
 
@@ -177,33 +231,31 @@ function go ( scene: Phaser.Scene ): void {
 	// Exits
 	const stage = scene.add.rectangle( 325 * s, 140 * s, 140 * s, 205 * s, 0x553366)
 		.setOrigin( 0 ).setDepth( 10 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: stage,
-		nextScene: game.scenes.STAGE,
+		nextScene: game.scenes.Stage,
 		// soundsToKeep: [
-		// 	game.soundsPERSISTANT.AMBIENCE.CITYRAIN,
-		// 	game.soundsPERSISTANT.AMBIENCE.JAZZ,
+		// 	game.soundsPersistant.ambience.cityrain,
+		// 	game.soundsPersistant.ambience.jazz,
 		// ],
 	})
 	const stairs = scene.add.rectangle( 645 * s, 30 * s, 155 * s, 420 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: stairs,
-		nextScene: game.scenes.HALLWAY,
+		nextScene: game.scenes.Hallway,
 	})
 	const hallway = scene.add.rectangle( 0, 215 * s, 175 * s, 235 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: hallway,
-		nextScene: game.scenes.HALLWAY,
+		nextScene: game.scenes.Hallway,
 	})
-
-	log(`${scene.scene.key} created.`)
 }
 

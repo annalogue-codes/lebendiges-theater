@@ -16,32 +16,33 @@
 
 import Phaser from 'phaser'
 
-import { debug, resume, log, onMobileDevice } from '../utils/general'
-import * as Up from '../utils/phaser'
-import { game, getState, addState, s } from '../constants'
+import { resume, onMobileDevice, keepScene } from '../utils/general'
+import { game, s } from '../constants'
 
 // delete old version caches
-await Up.deleteOldCaches({ nameOfCache: game.cacheName })
+await game.cache.deleteOldCaches()
 
 //delete current cache
-// await caches.delete( currentCacheName )
+// await caches.delete( game.cache.name )
 
 
 export default class Loader extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.LOADER )
+		super( game.scenes.Loader )
 	}
 
 	// init() {
 	// }
 
 	// preload() {
-	// 	Up.loadAssets( this )
+	// 	Up.assets.load( this )
 	// }
 
 	create() {
-		Up.setState({ game: game, newState: { ...game.initialState, ...getState() } })
+		// Update state to newly added state fields.
+		game.state.set({ ...game.state.initial, ...game.state.get() })
+
 		/*
 			background-color: #9e0059;
 		*/
@@ -59,7 +60,7 @@ export default class Loader extends Phaser.Scene {
 
 		if ( !container || !start || !restart ) { console.error( 'Could not access container or start element.' ); return }
 
-		// if (debug) addState({ currentScene: game.scenes.STAGE })
+		// if (debug) game.state.add({ currentScene: game.scenes.Foyer })
 
 		if ( onMobileDevice() ) setFullscreenTrigger( this, container )
 
@@ -69,26 +70,25 @@ export default class Loader extends Phaser.Scene {
 		// Add initial assets into the cache
 		const addInitialAssetsToCache = async () => {
 			for ( const [scene, assets] of Object.entries( game.images ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
 			for ( const [scene, assets] of Object.entries( game.sprites ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
 			for ( const [scene, assets] of Object.entries( game.sounds ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
 			for ( const category of Object.values( game.soundsPersistant ) ) for ( const value of Object.values( category ) ) {
-				await Up.addToCache({ cache: game.cache, key: value.key })
+				await game.cache.add( value.key )
 			}
 			// Load ambient sounds
 			for ( const category of Object.values( game.soundsPersistant ) ) for ( const value of Object.values( category ) ) {
-				await Up.loadAudioFromCache({ cache: game.cache, scene: this, key: value.key })
+				await game.cache.loadAudio({ scene: this, key: value.key })
 			}
-			for ( const spritesheet of Object.values( game.sprites.CAT ) ) {
-				await Up.loadSpriteFromCache({ cache: game.cache, scene: this, key: spritesheet.key, width: spritesheet.width, height: spritesheet.height })
+			for ( const spritesheet of Object.values( game.sprites.cat ) ) {
+				await game.cache.loadSprite({ scene: this, key: spritesheet.key, width: spritesheet.width, height: spritesheet.height })
 			}
 
-			log( `initial cache complete.` )
 			this.events.emit( 'initialCacheComplete' )
 		}
 		addInitialAssetsToCache()
@@ -96,21 +96,18 @@ export default class Loader extends Phaser.Scene {
 		// Add remaining assets into the cache
 		const addRemainingAssetsToCache = async () => {
 			for ( const [scene, assets] of Object.entries( game.images ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
 			for ( const [scene, assets] of Object.entries( game.sprites ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
 			for ( const [scene, assets] of Object.entries( game.sounds ) ) if ( !game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await Up.addToCache({ cache: game.cache, key: asset.key })
+				await game.cache.add( asset.key )
 			}
-
-			log( `remaining cache complete.` )
 		}
 
 		this.events.once( 'initialCacheComplete', () => {
 			this.load.once( Phaser.Loader.Events.COMPLETE, () => {
-				log( `All initial assets loaded.` )
 				// Add ambient sounds
 				Object.values( game.soundsPersistant ).forEach( category => { Object.values( category ).forEach( value => {
 					this.sound.add( value.key )
@@ -119,9 +116,7 @@ export default class Loader extends Phaser.Scene {
 				addRemainingAssetsToCache()
 
 				start.classList.add( 'visible' )
-				if ( JSON.stringify( getState() ) !== JSON.stringify( game.initialState ) ) restart.classList.add( 'visible' )
-
-				log( `Persistant sounds added.` )
+				if ( JSON.stringify( game.state.get() ) !== JSON.stringify( game.state.initial ) ) restart.classList.add( 'visible' )
 
 				if ( resume ) resumeCurrentScene( this, domElem, container )
 			})
@@ -156,7 +151,7 @@ function resumeCurrentScene (
 	domElem.pointerEvents = 'none'
 	container.style.pointerEvents = 'none'
 
-	const currentScene = getState().currentScene
+	const currentScene = game.state.get().currentScene
 	scene.scene.run( currentScene )
 
 	container.classList.add('fade-out')
@@ -167,7 +162,7 @@ function resumeCurrentScene (
 		ease: Phaser.Math.Easing.Linear,
 		onComplete: () => {
 			console.log( 'Loader has stopped.' )
-			scene.scene.stop( game.scenes.LOADER )
+			scene.scene.stop( game.scenes.Loader )
 		}
 	})
 }
@@ -179,7 +174,9 @@ function resumeCurrentSceneListener (
 	restart?: boolean,
 ): void {
 	button.onclick = () => {
-		if ( restart ) Up.setState({ game: game, newState: { ...game.initialState } })
+		const currentScene = game.state.get().currentScene
+		if ( restart ) game.state.set( game.state.initial )
+		if ( keepScene ) game.state.add({ currentScene })
 		resumeCurrentScene( scene, domElem, container )
 	}
 }

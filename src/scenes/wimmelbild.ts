@@ -14,16 +14,21 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { game, getState, addState, s } from '../constants'
-import { debug, presentation, log, clamp, randomInt, randomElementOf } from '../utils/general'
-import * as Set from '../utils/set'
-import * as Up from '../utils/phaser'
+
+import * as Up from '../utils/phaser/common'
+import * as Audio from '../utils/phaser/audio'
+
+import { game, s } from '../constants'
+import { debug, log } from '../utils/general'
+import { addZoomAndPanSupport, maxZoom, zoomAndPan } from '../utils/phaser/gestures'
+import { randomInt, randomElementOf } from '../utils/math'
+import { addExit } from '../utils/phaser/exit'
 
 
 export default class Wimmelbild extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.WIMMELBILD )
+		super( game.scenes.Wimmelbild )
 	}
 
 	// init() {
@@ -34,7 +39,7 @@ export default class Wimmelbild extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {
@@ -43,131 +48,94 @@ export default class Wimmelbild extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	// reset
-	if ( debug || presentation ) addState({ peopleFound: Set.newSet() })
+	// if ( debug ) game.state.add({ peopleFound: [] })
 
 	// Been there done that.
-	addState({ arrivedAtWimmelbild: true })
+	game.state.add({ arrivedAtWimmelbild: true })
+
+	// make Atze compliment us again.
+	game.state.add({ atzeCommentedFoundPeople: 0 })
+
+	// remember previously found people.
+	game.state.add({ peopleFoundPrevious: game.state.get().peopleFound })
+
+	// Ambience
+	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.noblesberlin.key, volume: game.soundsPersistant.ambience.noblesberlin.volume, fadeIn: 3000 })
+
+	const leftSide = scene.add.rectangle( 0, 0, (800 - 656) * s, 450 * s, 0xebd292).setOrigin( 0 )
 
 	// Resizable frame
 	const cameraWidth = 656 * s
-	const cameraOffsetX = 800 * s - cameraWidth
-	const camera = scene.cameras.add( cameraOffsetX, 0, cameraWidth, 450 * s, false, 'viewOnBerlin' )
+	const cameraX = 800 * s - cameraWidth
+	const camera = scene.cameras.add( cameraX, 0, cameraWidth, 450 * s, false, 'viewOnBerlin' )
 		.setZoom(1)
-		.setScroll( cameraOffsetX, 0 )
+		.setScroll( cameraX, 0 )
 
-	// Ambience
-	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.NOBLESBERLIN.key, volume: game.soundsPersistant.AMBIENCE.NOBLESBERLIN.volume * 0.5, fadeIn: 3000 })
-	const leftSide = scene.add.rectangle( 0, 0, (800 - 656) * s, 450 * s, 0xebd292).setOrigin( 0 )
-	const berlin = scene.add.image( (800 - 656) * s, 0, game.images.WIMMELBILD.BERLIN.key )
+	const berlin = scene.add.image( (800 - 656) * s, 0, game.images.wimmelbild.berlin.key )
 		.setOrigin( 0 )
 		.setDisplaySize( 656 * s, 450 * s)
 		.setInteractive()
-	Up.addGestureSupport( berlin )
+
+	addZoomAndPanSupport({ object: berlin, camera })
 
 	// Zoom lenses
-	const lensplus = scene.add.image( 715 * s, 400 * s, game.images.WIMMELBILD.LENSPLUS.key )
+	const lensplus = scene.add.image( 715 * s, 400 * s, game.images.wimmelbild.lensplus.key )
 		.setOrigin( 0 )
 		.setDisplaySize( 41 * s, 43 * s )
 		.setInteractive().setDepth(10)
-	const lensminus = scene.add.image( 752 * s, 400 * s, game.images.WIMMELBILD.LENSMINUS.key )
+
+	const lensminus = scene.add.image( 752 * s, 400 * s, game.images.wimmelbild.lensminus.key )
 		.setOrigin( 0 )
 		.setDisplaySize( 41 * s, 43 * s)
 		.setInteractive()
 
-	const setCameraScrollToBoundaries = () => {
-		const boundaryX = camera.width  * ( 1 - 1 / camera.zoom ) / 2
-		const boundaryY = camera.height * ( 1 - 1 / camera.zoom ) / 2
-		camera.scrollX = clamp( cameraOffsetX - boundaryX, camera.scrollX, cameraOffsetX + boundaryX )
-		camera.scrollY = clamp( -boundaryY, camera.scrollY, boundaryY )
-	}
-	const cameraZoomIn = () => {
+	lensplus.on(  Phaser.Input.Events.POINTER_DOWN, () => { cameraZoomIn() })
+	lensminus.on( Phaser.Input.Events.POINTER_DOWN, () => { cameraZoomOut() })
+
+	function cameraZoomIn() {
 		scene.tweens.add({
 			targets: camera,
-			zoom: Math.min( 8, camera.zoom + 0.5 ),
+			zoom: Math.min( maxZoom, camera.zoom + 0.5 ),
 			duration: 500,
 			ease: Phaser.Math.Easing.Quadratic.InOut,
-			onUpdate: () => { setCameraScrollToBoundaries() }
+			onUpdate: () => { zoomAndPan({ camera, zoomFactor: 1, pan: new Phaser.Math.Vector2( 0, 0 ) }) }
 		})
 	}
-	const cameraZoomOut = () => {
+	function cameraZoomOut() {
 		scene.tweens.add({
 			targets: camera,
 			zoom: Math.max( 1, camera.zoom - 0.5 ),
 			duration: 500,
 			ease: Phaser.Math.Easing.Quadratic.InOut,
-			onUpdate: () => { setCameraScrollToBoundaries() }
+			onUpdate: () => { zoomAndPan({ camera, zoomFactor: 1, pan: new Phaser.Math.Vector2( 0, 0 ) }) }
 		})
 	}
-	lensplus.on( Phaser.Input.Events.POINTER_DOWN, () => {
-		cameraZoomIn()
-	})
-	lensminus.on( Phaser.Input.Events.POINTER_DOWN, () => {
-		cameraZoomOut()
-	})
 
-	// const ctrl = scene.input.keyboard?.addKey( Phaser.Input.Keyboard.KeyCodes.CTRL )
-	// berlin.on( Phaser.Input.Events.POINTER_WHEEL, (pointer: Phaser.Input.Pointer, deltaX: number, deltaY: number, deltaZ: number ) => {
-	// 	camera.zoom = clamp(1, camera.zoom - 0.01 * deltaY * camera.zoom, 8)
-	// 	// console.log( 'ctrl' )
-	// 	// console.log( ctrl )
-	// })
-	berlin.on( 'atze-inputzoom', ( zoomDelta: number ) => {
-		camera.setZoom( clamp(1, camera.zoom - 0.00125 * zoomDelta * camera.zoom, 8) )
-		setCameraScrollToBoundaries()
-	})
-	berlin.on( 'atze-inputzoomandpan', ( zoomFactor: number, panX: number, panY: number ) => {
-		camera.setZoom( clamp(1, camera.zoom * zoomFactor, 8) )
-		const boundaryX = camera.width  * ( 1 - 1 / camera.zoom ) / 2
-		const boundaryY = camera.height * ( 1 - 1 / camera.zoom ) / 2
-		const diffX = panX / camera.zoom
-		const diffY = panY / camera.zoom
-		// console.log( diffX )
-		// console.log( diffY )
-		camera.scrollX = clamp( cameraOffsetX - boundaryX, camera.scrollX - diffX, cameraOffsetX + boundaryX )
-		camera.scrollY = clamp( -boundaryY, camera.scrollY - diffY, boundaryY )
-	})
-	// berlin.on( Phaser.Input.Events.POINTER_DOWN, (pointer: Phaser.Input.Pointer) => {
-	// 	const boundaryX = camera.width  * ( 1 - 1 / camera.zoom ) / 2
-	// 	const boundaryY = camera.height * ( 1 - 1 / camera.zoom ) / 2
-	// 	let oldX = pointer.x
-	// 	let oldY = pointer.y
-	// 	berlin.on( Phaser.Input.Events.POINTER_MOVE, (pointer: Phaser.Input.Pointer) => {
-	// 		const diffX = (pointer.x - oldX) / camera.zoom
-	// 		const diffY = (pointer.y - oldY) / camera.zoom
-	// 		camera.scrollX = clamp( cameraOffsetX - boundaryX, camera.scrollX - diffX, cameraOffsetX + boundaryX )
-	// 		camera.scrollY = clamp( -boundaryY, camera.scrollY - diffY, boundaryY )
-	// 		oldX = pointer.x
-	// 		oldY = pointer.y
-	// 	})
-	// 	berlin.once( Phaser.Input.Events.POINTER_UP, () => {
-	// 		berlin.off( Phaser.Input.Events.POINTER_MOVE )
-	// 	})
-	// })
 
 	// Objects
-	const sams = scene.add.sprite( 70 * s, 354 * s, game.sprites.WIMMELBILD.SAMS.key, 0 ).setOrigin( 0 ).setInteractive()
-	const samsColor = sams.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'sams' ) ? 0 : -1 , false )
+	const sams = scene.add.sprite( 70 * s, 354 * s, game.sprites.wimmelbild.sams.key, 0 ).setOrigin( 0 ).setInteractive()
+	const samsColor = sams.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('sams') ? 0 : -1 , false )
 
-	const albirea = scene.add.sprite( 70 * s, 154 * s, game.sprites.WIMMELBILD.ALBIREA.key, 0 ).setOrigin( 0 ).setInteractive()
-	const albireaColor = albirea.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'albirea' ) ? 0 : -1 , false )
+	const albirea = scene.add.sprite( 70 * s, 154 * s, game.sprites.wimmelbild.albirea.key, 0 ).setOrigin( 0 ).setInteractive()
+	const albireaColor = albirea.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('albirea') ? 0 : -1 , false )
 
-	const bach = scene.add.sprite( 5 * s, 104 * s, game.sprites.WIMMELBILD.BACH.key, 0 ).setOrigin( 0 ).setInteractive()
-	const bachColor = bach.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'bach' ) ? 0 : -1 , false )
+	const bach = scene.add.sprite( 5 * s, 104 * s, game.sprites.wimmelbild.bach.key, 0 ).setOrigin( 0 ).setInteractive()
+	const bachColor = bach.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('bach') ? 0 : -1 , false )
 
-	const bear = scene.add.sprite( 70 * s, 54 * s, game.sprites.WIMMELBILD.BEAR.key, 0 ).setOrigin( 0 ).setInteractive()
-	const bearColor = bear.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'bear' ) ? 0 : -1 , false )
+	const bear = scene.add.sprite( 70 * s, 54 * s, game.sprites.wimmelbild.bear.key, 0 ).setOrigin( 0 ).setInteractive()
+	const bearColor = bear.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('bear') ? 0 : -1 , false )
 
-	const entlein = scene.add.sprite( 5 * s, 204 * s, game.sprites.WIMMELBILD.ENTLEIN.key, 0 ).setOrigin( 0 ).setInteractive()
-	const entleinColor = entlein.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'entlein' ) ? 0 : -1 , false )
+	const entlein = scene.add.sprite( 5 * s, 204 * s, game.sprites.wimmelbild.entlein.key, 0 ).setOrigin( 0 ).setInteractive()
+	const entleinColor = entlein.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('entlein') ? 0 : -1 , false )
 
-	const hauptmann = scene.add.sprite( 70 * s, 254 * s, game.sprites.WIMMELBILD.HAUPTMANN.key, 0 ).setOrigin( 0 ).setInteractive()
-	const hauptmannColor = hauptmann.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'hauptmann' ) ? 0 : -1 , false )
+	const hauptmann = scene.add.sprite( 70 * s, 254 * s, game.sprites.wimmelbild.hauptmann.key, 0 ).setOrigin( 0 ).setInteractive()
+	const hauptmannColor = hauptmann.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('hauptmann') ? 0 : -1 , false )
 
-	const neinhorn = scene.add.sprite( 5 * s, 304 * s, game.sprites.WIMMELBILD.NEINHORN.key, 0 ).setOrigin( 0 ).setInteractive()
-	const neinhornColor = neinhorn.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'neinhorn' ) ? 0 : -1 , false )
+	const neinhorn = scene.add.sprite( 5 * s, 304 * s, game.sprites.wimmelbild.neinhorn.key, 0 ).setOrigin( 0 ).setInteractive()
+	const neinhornColor = neinhorn.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('neinhorn') ? 0 : -1 , false )
 
-	const ronja = scene.add.sprite( 5 * s, 4 * s, game.sprites.WIMMELBILD.RONJA.key, 0 ).setOrigin( 0 ).setInteractive()
-	const ronjaColor = ronja.postFX.addColorMatrix().saturate( Set.has( getState().peopleFound, 'ronja' ) ? 0 : -1 , false )
+	const ronja = scene.add.sprite( 5 * s, 4 * s, game.sprites.wimmelbild.ronja.key, 0 ).setOrigin( 0 ).setInteractive()
+	const ronjaColor = ronja.postFX.addColorMatrix().saturate( game.state.get().peopleFound.includes('ronja') ? 0 : -1 , false )
 
 	const characters = { sams, albirea, bach, bear, entlein, hauptmann, neinhorn, ronja }
 
@@ -177,11 +145,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ALBIREA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.albirea.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ALBIREA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.albirea.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -193,11 +161,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BACH.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bach.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BACH.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bach.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -209,11 +177,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BEAR.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bear.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BEAR.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bear.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -226,11 +194,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 1000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ENTLEIN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.entlein.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ENTLEIN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.entlein.key, {
 				start: 2,
 				end: 0,
 			}),
@@ -242,11 +210,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.HAUPTMANN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.hauptmann.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.HAUPTMANN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.hauptmann.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -259,7 +227,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 1000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.NEINHORN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.neinhorn.key, {
 				start: 1,
 				end: 0,
 			}),
@@ -271,11 +239,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.RONJA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.ronja.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.RONJA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.ronja.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -288,11 +256,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 1000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.SAMS.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.sams.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.SAMS.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.sams.key, {
 				start: 2,
 				end: 0,
 			}),
@@ -306,7 +274,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ALBIREA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.albirea.key, {
 				start: 7,
 				end: 6,
 			}),
@@ -318,7 +286,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BACH.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bach.key, {
 				start: 0,
 				end: 0,
 			}),
@@ -330,15 +298,15 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BEAR.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bear.key, {
 				start: 6,
 				end: 8,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BEAR.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bear.key, {
 				start: 7,
 				end: 6,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.BEAR.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.bear.key, {
 				start: 0,
 				end: 0,
 			}),
@@ -350,11 +318,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ENTLEIN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.entlein.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.ENTLEIN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.entlein.key, {
 				start: 2,
 				end: 0,
 			}),
@@ -366,11 +334,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.HAUPTMANN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.hauptmann.key, {
 				start: 7,
 				end: 9,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.HAUPTMANN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.hauptmann.key, {
 				start: 8,
 				end: 6,
 			}),
@@ -382,7 +350,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.NEINHORN.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.neinhorn.key, {
 				start: 1,
 				end: 0,
 			}),
@@ -394,11 +362,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.RONJA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.ronja.key, {
 				start: 7,
 				end: 9,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.RONJA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.ronja.key, {
 				start: 8,
 				end: 6,
 			}),
@@ -410,11 +378,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: 1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.SAMS.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.sams.key, {
 				start: 0,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.WIMMELBILD.SAMS.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.wimmelbild.sams.key, {
 				start: 2,
 				end: 1,
 			}),
@@ -443,35 +411,38 @@ function go ( scene: Phaser.Scene ): void {
 		}))
 		if ( pendingBlink ) pendingBlink.remove()
 		pendingBlink = scene.time.delayedCall( randomInt(2000, 5000), () => {
-			const randomCharacter = randomElementOf( Object.keys(characters).filter( character => Set.has( getState().peopleFound, character ) ) )
+			const randomCharacter = randomElementOf( Object.keys(characters).filter( character => game.state.get().peopleFound.includes( character ) ) )
 			if ( randomCharacter ) { (characters as any)[randomCharacter].play( randomCharacter + 'Blink' ) }
 		})
 	}
 	randomCharacterBlink()
 
 	const characterSpeech = ( key: string, sprite: Phaser.GameObjects.Sprite, delay: number ) => {
-		Object.keys(characters).forEach( character => (characters as any)[character].off( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + character + 'Blink' ) )
-		Object.keys(characters).forEach( character => (characters as any)[character].stopAfterRepeat( 0 ) )
+		Object.keys( characters ).forEach( character => (characters as any)[ character ].off( Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + character + 'Blink' ) )
+		Object.keys( characters ).forEach( character => (characters as any)[ character ].stopAfterRepeat( 0 ) )
 		pendingBlink.remove()
-		Object.keys(characters).forEach( character => scene.sound.get( (game.sounds.WIMMELBILD as any)[character.toUpperCase()].key ).stop() )
-		const claire = (scene.sound.get( game.soundsPersistant.AMBIENCE.NOBLESBERLIN.key ) as any)
-		const claireVolume = claire.volume
+		Object.keys( characters ).forEach( character => scene.sound.get( (game.sounds.wimmelbild as any)[ character ].key ).stop() )
+
+		const claire = Audio.get({ scene, keyAndVolume: game.soundsPersistant.ambience.noblesberlin })
+		// const claire = (scene.sound.get( game.soundsPersistant.ambience.noblesberlin.key ) as any)
+		// const claireVolume = game.soundsPersistant.ambience.noblesberlin.volume
+
 		scene.tweens.add({
-			targets: claire,
-			volume: claireVolume / 15,
+			targets: claire.sound,
+			volume: claire.volume / 15,
 			duration: 1000,
 			ease: Phaser.Math.Easing.Linear,
 		})
-		const speech = scene.sound.get( (game.sounds.WIMMELBILD as any)[key.toUpperCase()].key )
-		speech.play({ volume: (game.sounds.WIMMELBILD as any)[key.toUpperCase()].volume * 0.3, delay: (delay + 300) / 1000 })
+		const speech = scene.sound.get( (game.sounds.wimmelbild as any)[ key ].key )
+		speech.play({ volume: (game.sounds.wimmelbild as any)[ key ].volume, delay: (delay + 300) / 1000 })
 		sprite.play({ key: 'speech', delay: delay })
 		speech.on( Phaser.Sound.Events.COMPLETE, () => {
 			if ( !scene.sys.isActive ) return
 
 			sprite.stopAfterRepeat( 0 )
 			scene.tweens.add({
-				targets: claire,
-				volume: claireVolume,
+				targets: claire.sound,
+				volume: claire.volume,
 				duration: 1000,
 				ease: Phaser.Math.Easing.Linear,
 			})
@@ -482,10 +453,10 @@ function go ( scene: Phaser.Scene ): void {
 		const duration = 1500
 		const ease = Phaser.Math.Easing.Linear
 		frame.off( Phaser.Input.Events.POINTER_UP )
-		if ( !Set.has( getState().peopleFound, key ) ) {
+		if ( !game.state.get().peopleFound.includes( key ) ) {
 			frame.once( Phaser.Input.Events.POINTER_UP, () => {
-				addState({ peopleFound: Set.add( getState().peopleFound, key ) })
-				scene.sound.get( game.sounds.WIMMELBILD.FOUND.key ).play({ volume: game.sounds.WIMMELBILD.FOUND.volume * 0.3 })
+				game.state.add({ peopleFound: [...new Set( game.state.get().peopleFound ).add( key ) ] })
+				scene.sound.get( game.sounds.wimmelbild.found.key ).play({ volume: game.sounds.wimmelbild.found.volume })
 				scene.tweens.addCounter({
 					from: 0,
 					to: 100,
@@ -497,7 +468,7 @@ function go ( scene: Phaser.Scene ): void {
 			})
 		}
 		sprite.on( Phaser.Input.Events.POINTER_UP, () => {
-			if ( Set.has( getState().peopleFound, key ) ) {
+			if ( game.state.get().peopleFound.includes( key ) ) {
 				characterSpeech( key, sprite, 0 )
 			}
 		})
@@ -518,40 +489,42 @@ function go ( scene: Phaser.Scene ): void {
 		.setScroll( 705 * s, 400 * s)
 		.ignore([ berlin, leftSide, ...frames, ronja, bear, bach, albirea, entlein, hauptmann, neinhorn, sams ])
 
-	// Exit
-	const stage = scene.add.rectangle( 0, 425 * s, 25 * s, 25 * s, 0x553366)
-		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
-		game: game,
-		scene: scene,
-		exit: stage,
-		nextScene: game.scenes.STAGE,
-	})
+
+
+	// Exits
+	if ( debug ) {
+		const stage = scene.add.rectangle( 0, 425 * s, 25 * s, 25 * s, 0x553366)
+			.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
+		addExit({
+			game: game,
+			scene: scene,
+			exit: stage,
+			nextScene: game.scenes.Stage,
+		})
+	}
+
 	const subway = scene.add.rectangle( 145 * s, 375 * s, 92 * s, 75 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: subway,
-		nextScene: game.scenes.FASSADE,
+		nextScene: game.scenes.Fassade,
 		soundsToKeep: [
-			game.soundsPersistant.AMBIENCE.CITYRAIN,
+			game.soundsPersistant.ambience.cityrain,
 		],
 	})
 	const subway2 = scene.add.rectangle( 345 * s, 125 * s, 45 * s, 40 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: subway2,
-		nextScene: game.scenes.FASSADE,
+		nextScene: game.scenes.Fassade,
 		soundsToKeep: [
-			game.soundsPersistant.AMBIENCE.CITYRAIN,
+			game.soundsPersistant.ambience.cityrain,
 		],
 	})
-
-	log(`${scene.scene.key} created.`)
 }
-
 
 

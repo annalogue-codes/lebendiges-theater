@@ -16,14 +16,14 @@
 import Phaser from 'phaser'
 
 import { debug, presentation, onMobileDevice } from '../utils/general'
-import { setState, addBackground, exitTo, addToCache, loadImageFromCache } from '../utils/phaser'
-import { game, getState, addState, h, w, INITIALSCENE } from '../constants'
+import { addBackground } from '../utils/phaser/common'
+import { game, h, w } from '../constants'
 
 
 export default class Init extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.INIT )
+		super( game.scenes.Init )
 	}
 
 	// init() {
@@ -66,29 +66,14 @@ export default class Init extends Phaser.Scene {
 			// this.text = this.add.text(100, 800, '', { font: '28px monospace' })
 		}
 
-		// const resetButton = this.add.rectangle( w - 0.1 * h, 0, 0.1 * h, 0.1 * h, 0x553366 )
-		// 	.setOrigin( 0, 0 )
-		// 	.setInteractive()
-		// resetButton.alpha = debug ? 0.5 : 0.001
-		// resetButton.on( Phaser.Input.Events.POINTER_UP, () => {
-		// 	const currentScene = getState().currentScene
-		// 	setState({ game: game, newState: { ...game.initialState, currentScene: currentScene } })
-		// 	exitTo({
-		// 		game: game,
-		// 		scene: this.scene.get( getState().currentScene ),
-		// 		nextScene: INITIALSCENE,
-		// 		reset: true
-		// 	})
-		// })
+		this.scene.bringToTop( game.scenes.Snooze )
+		this.scene.bringToTop( game.scenes.Init )
 
-		this.scene.bringToTop( game.scenes.SNOOZE )
-		this.scene.bringToTop( game.scenes.INIT )
-
-		this.sound.pauseOnBlur = false
 
 		if ( onMobileDevice() ) {
 			setFullscreenTrigger( this )
 		}
+		this.sound.pauseOnBlur = false
 		if ( !presentation ) {
 			handleFocus( this )
 		}
@@ -101,7 +86,7 @@ export default class Init extends Phaser.Scene {
 		// 	// ...
 		// })
 
-		this.scene.run( game.scenes.LOADER )
+		this.scene.run( game.scenes.Loader )
 	}
 
 	// update() {//
@@ -137,23 +122,25 @@ const handleFocus = (scene: Phaser.Scene) => {
 const PREVIOUSSCENES = 'previousScenes'
 
 const handleLoseFocus = (scene: Phaser.Scene) => {
-	if ( getState().paused ) {
+	if ( game.state.get().paused ) {
 		return
 	}
-	addState({ paused: true })
+	game.state.add({ paused: true })
 
 	// scene.sound.mute = true
 	// scene.sound.setVolume( 0 )
 
-	const currentScenes = scene.game.scene.getScenes().filter( s => s.scene.key !== game.scenes.INIT )
+	const currentScenes = scene.game.scene.getScenes().filter( s => s.scene.key !== game.scenes.Init )
 	scene.registry.set( PREVIOUSSCENES, currentScenes )
 	currentScenes.forEach( (s: Phaser.Scene) => scene.scene.pause(s) )
 
-	scene.scene.run(game.scenes.SNOOZE)
+	scene.scene.run(game.scenes.Snooze)
+	// scene.game.pause()
 }
 
 const handleGainFocus = (scene: Phaser.Scene) => {
-	scene.scene.stop(game.scenes.SNOOZE)
+	// if ( scene.game.isPaused ) scene.game.resume()
+	scene.scene.stop(game.scenes.Snooze)
 
 	const previousScenes = scene.registry.get( PREVIOUSSCENES )
 	previousScenes?.forEach( (s: Phaser.Scene) => scene.scene.resume(s) )
@@ -161,7 +148,7 @@ const handleGainFocus = (scene: Phaser.Scene) => {
 	// scene.sound.mute = false
 	// scene.sound.setVolume( 1 )
 
-	addState({ paused: false })
+	game.state.add({ paused: false })
 }
 
 const setFullscreenTrigger = ( scene: Phaser.Scene ) => {
@@ -188,15 +175,15 @@ async function setCursor ( scene: Phaser.Scene ): Promise<void> {
 
 	scene.input.setDefaultCursor('url( "other/emptyDot.png" ), none')
 
-	// for ( const value of Object.values( game.images.OTHER ) ) {
+	// for ( const value of Object.values( game.images.other ) ) {
 		// await addToCache({ cache: game.cache, key: value.key })
 		// await loadImageFromCache({ cache: game.cache, scene: scene, key: value.key })
 	// }
-	scene.load.image( game.images.OTHER.CIRCLE.key, `other/${w}x${h}/glowCircle_small.png`)
+	scene.load.image( game.images.other.circle.key, `other/${w}x${h}/glowCircle_small.png`)
 	scene.load.start()
 
 	scene.load.on( Phaser.Loader.Events.COMPLETE, () => {
-		const cursor = scene.add.image( w - 0.2 * h, 0.8 * h, game.images.OTHER.CIRCLE.key )
+		const cursor = scene.add.image( w - 0.2 * h, 0.8 * h, game.images.other.circle.key )
 		cursor.setScale(0.6)
 		cursor.tint = 0xfffff0
 

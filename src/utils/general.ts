@@ -14,9 +14,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-const debug = true
-const resume = false
+const debug = false
+const keepScene = false
 const presentation = false
+const resume = false
 
 function log <T>(s: any, content?: T): T | undefined {
 	if (debug) console.log(s)
@@ -30,22 +31,6 @@ function fromMaybe <T>( fallBack: T, maybeVar: T ): T {
 
 function sleep ( ms: number ) {
 	return new Promise( resolve => setTimeout( resolve, ms ) )
-}
-
-function clamp ( min: number, mid: number, max: number ) {
-	return Math.max( min, Math.min( mid, max ))
-}
-
-function random ( min: number, max: number ) {
-	return Math.random() * (max - min) + min
-}
-
-function randomInt (min: number, max: number) {
-	return Math.floor( Math.random() * (max - min + 1) ) + min
-}
-
-function randomElementOf <T>( arr: Array<T> ): T {
-	return arr[ Math.floor(Math.random() * arr.length) ]
 }
 
 function getFileExtension ( filename: string ) {
@@ -77,24 +62,26 @@ function onTablet () {
 	return isTablet
 }
 
-type MakePropertiesOptional<Type> = {
-	[Property in keyof Type]?: Type[Property]
-}
+type JSONCompatible =
+	| string
+	| number
+	| boolean
+	| null
+	| { [key: string]: JSONCompatible }
+	| JSONCompatible[]
+
 
 export type {
-	MakePropertiesOptional,
+	JSONCompatible,
 }
 export {
 	debug,
+	keepScene,
 	resume,
 	presentation,
 	log,
 	fromMaybe,
 	sleep,
-	clamp,
-	random,
-	randomInt,
-	randomElementOf,
 	getFileExtension,
 	onMobileDevice,
 	onTablet,

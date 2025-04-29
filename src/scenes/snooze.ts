@@ -14,11 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
+
 import { game, h, w, s } from '../constants'
 
 export default class Snooze extends Phaser.Scene {
 	constructor() {
-		super( game.scenes.SNOOZE )
+		super( game.scenes.Snooze )
 	}
 
 	// init () {
@@ -39,3 +40,4 @@ export default class Snooze extends Phaser.Scene {
 	// update() {
 	// }
 }
+

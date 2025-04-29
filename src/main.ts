@@ -24,11 +24,13 @@ import Entrance from './scenes/entrance'
 import Foyer from './scenes/foyer'
 import Trailers from './scenes/trailers'
 import Backstage from './scenes/backstage'
+import Cashier from './scenes/cashier'
 import Hallway from './scenes/hallway'
 import Stagedoor from './scenes/stagedoor'
 import Stage from './scenes/stage'
 import Piano from './scenes/piano'
 import Showroom from './scenes/showroom'
+import Looper from './scenes/looper'
 import Paint from './scenes/paint'
 // import Presentation from './scenes/presentation'
 import Wimmelbild from './scenes/wimmelbild'
@@ -45,6 +47,8 @@ const config: Phaser.Types.Core.GameConfig = {
 	backgroundColor: '#2d2d2d',
 	scale: {
 		parent: 'app',
+		width: 1600,
+		height: 900,
 		mode: Phaser.Scale.FIT,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
@@ -63,14 +67,14 @@ const config: Phaser.Types.Core.GameConfig = {
 	physics: {
 		default: 'arcade',
 		arcade: {
-			gravity: { y: game.config.gravity },
+			gravity: { y: game.config.gravity, x: 0 },
 			debug: false,
 		},
 	},
 	dom: {
 		createContainer: true
 	},
-	scene: [Init, Loader, Fassade, Entrance, Foyer, Trailers, Backstage, Hallway, Stagedoor, Stage, Piano, Showroom, Paint, Wimmelbild, Snooze],
+	scene: [Init, Loader, Fassade, Entrance, Foyer, Trailers, Backstage, Cashier, Hallway, Stagedoor, Stage, Piano, Showroom, Looper, Paint, Wimmelbild, Snooze],
 }
 
 const theGame = new Phaser.Game(config)

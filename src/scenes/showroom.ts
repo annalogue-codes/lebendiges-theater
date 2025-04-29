@@ -14,19 +14,23 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { game, getState, s } from '../constants'
+
 import * as Cat from '../sprites/cat'
-import { debug, log } from '../utils/general'
 import * as Set from '../utils/set'
-import * as Up from '../utils/phaser'
+import * as Up from '../utils/phaser/common'
 import * as Inventory from '../utils/inventory'
+
+import { game, s } from '../constants'
+import { debug } from '../utils/general'
+import { addExit } from '../utils/phaser/exit'
+
 
 /* Main part */
 
 export default class Showroom extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.SHOWROOM )
+		super( game.scenes.Showroom )
 	}
 
 	// init() {
@@ -38,7 +42,7 @@ export default class Showroom extends Phaser.Scene {
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
 		Inventory.load({ game: game, scene: this })
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {
@@ -47,13 +51,15 @@ export default class Showroom extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	// Ambience
-	Up.addBackground({ game: game, scene: scene, key: game.images.SHOWROOM.BACKGROUND.key })
-	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume * (2/3), fadeIn: 3000 })
+	Up.addBackground({ game: game, scene: scene, key: game.images.showroom.background.key })
+	// Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.lofi.key, volume: game.soundsPersistant.ambience.lofi.volume * (2/3), fadeIn: 3000 })
 
 	// Stray tems
-	if ( !Set.toArray( getState().inventory ).includes( 'wig' ) ) {
-		const wig = scene.add.image( 150 * s, 200 * s, game.images.SHOWROOM.wig.key ).setInteractive().setDepth( 50 )
-		wig.on( 'pointerup', () => { Inventory.add( 'wig', wig ) })
+	if ( !game.state.get().inventory.includes( 'wig' ) ) {
+		const chest = Inventory.createChest({ game, scene })
+
+		const wig = scene.add.image( 150 * s, 200 * s, game.images.showroom.wig.key ).setInteractive().setDepth( 50 )
+		wig.on( 'pointerup', () => { chest.foundItem({ item: 'wig', image: wig }) })
 	}
 
 	// The Cat!
@@ -76,13 +82,13 @@ function go ( scene: Phaser.Scene ): void {
 		.setInteractive()
 
 	// Melodias responses to items clicked in scene.
-	const melodiaTuba = scene.sound.get( game.sounds.SHOWROOM.TUBA.key )
-	const melodiaParcour = scene.sound.get( game.sounds.SHOWROOM.PARCOUR.key )
+	const melodiaTuba = scene.sound.get( game.sounds.showroom.tuba.key )
+	const melodiaParcour = scene.sound.get( game.sounds.showroom.parcour.key )
 
 	const onTuba = () => {
 		melodia.off( Phaser.Animations.Events.ANIMATION_START )
 		melodia.once( Phaser.Animations.Events.ANIMATION_START, () => {
-			melodiaTuba.play({ volume: game.sounds.SHOWROOM.TUBA.volume })
+			melodiaTuba.play({ volume: game.sounds.showroom.tuba.volume })
 		})
 		melodia.play( 'tuba' )
 		melodiaTuba.off( Phaser.Sound.Events.COMPLETE )
@@ -95,7 +101,7 @@ function go ( scene: Phaser.Scene ): void {
 	const onBeanbag = () => {
 		melodia.off( Phaser.Animations.Events.ANIMATION_START )
 		melodia.once( Phaser.Animations.Events.ANIMATION_START, () => {
-			melodiaParcour.play({ volume: game.sounds.SHOWROOM.PARCOUR.volume })
+			melodiaParcour.play({ volume: game.sounds.showroom.parcour.volume })
 		})
 		melodia.play( 'parcour' )
 		melodiaParcour.off( Phaser.Sound.Events.COMPLETE )
@@ -124,31 +130,31 @@ function go ( scene: Phaser.Scene ): void {
 	//
 	// // Images in Flipchart
 	// const podium = [
-	// 	scene.add.image( 590 * s, 137 * s, game.images.SHOWROOM.PODIUMVERTIKAL01.key )
+	// 	scene.add.image( 590 * s, 137 * s, game.images.showroom.podiumvertikal01.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s).setDisplaySize( 100 * s, 150 * s)
 	// 		.setAlpha( 0.001 ),
-	// 	scene.add.image( 590 * s, 137 * s, game.images.SHOWROOM.PODIUMVERTIKAL02.key )
+	// 	scene.add.image( 590 * s, 137 * s, game.images.showroom.podiumvertikal02.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s).setDisplaySize( 100 * s, 150 * s)
 	// 		.setAlpha( 0.001 ),
 	// ]
 	// const stimme = [
-	// 	scene.add.image( 590 * s, 137 * s, game.images.SHOWROOM.STIMMEDERZUKUNFTVERTIKAL01.key )
+	// 	scene.add.image( 590 * s, 137 * s, game.images.showroom.stimmederzukunftvertikal01.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s).setDisplaySize( 100 * s, 150 * s)
 	// 		.setAlpha( 0.001 ),
-	// 	scene.add.image( 590 * s, 137 * s, game.images.SHOWROOM.STIMMEDERZUKUNFTVERTIKAL02.key )
+	// 	scene.add.image( 590 * s, 137 * s, game.images.showroom.stimmederzukunftvertikal02.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s).setDisplaySize( 100 * s, 150 * s)
 	// 		.setAlpha( 0.001 ),
 	// ]
 	// const familiennacht = [
-	// 	scene.add.image( 590 * s, 137 * s, game.images.SHOWROOM.FAMILIENNACHTVERTIKAL01.key )
+	// 	scene.add.image( 590 * s, 137 * s, game.images.showroom.familiennachtvertikal01.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s ).setDisplaySize( 100 * s, 150 * s )
 	// 		.setAlpha( 0.001 ),
-	// 	scene.add.image( 1180, 275, game.images.SHOWROOM.FAMILIENNACHTVERTIKAL02.key )
+	// 	scene.add.image( 1180, 275, game.images.showroom.familiennachtvertikal02.key )
 	// 		.setOrigin( 0 )
 	// 		.setSize( 100 * s, 150 * s ).setDisplaySize( 100 * s, 150 * s )
 	// 		.setAlpha( 0.001 ),
@@ -226,54 +232,62 @@ function go ( scene: Phaser.Scene ): void {
 
 
 	// Exits
-	const hallway = scene.add.rectangle( 0, 0, 75 * s, 235 * s, 0x553366)
+	const hallway = scene.add.rectangle( 0, 0, 75 * s, 235 * s, 0x553366 )
 		.setOrigin( 0 )
 		.setAlpha( debug ? 0.5 : 0.001 )
 		.setInteractive()
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: hallway,
-		nextScene: game.scenes.HALLWAY,
+		nextScene: game.scenes.Hallway,
 	})
-	const paper = scene.add.rectangle( 110 * s, 375 * s, 200 * s, 75 * s, 0x553366)
+	const paper = scene.add.rectangle( 110 * s, 375 * s, 200 * s, 75 * s, 0x553366 )
 		.setOrigin( 0 )
 		.setAlpha( debug ? 0.5 : 0.001 )
 		.setInteractive()
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: paper,
-		nextScene: game.scenes.PAINT,
+		nextScene: game.scenes.Paint,
 	})
-	const presentation = scene.add.rectangle( 575 * s, 120 * s, 127 * s, 187 * s, 0x553366)
+	const looper = scene.add.rectangle( 1040, 780, 170, 120, 0x553366 )
 		.setOrigin( 0 )
 		.setAlpha( debug ? 0.5 : 0.001 )
 		.setInteractive()
-	Up.addExit({
+	addExit({
+		game: game,
+		scene: scene,
+		exit: looper,
+		nextScene: game.scenes.Looper,
+	})
+	const presentation = scene.add.rectangle( 575 * s, 120 * s, 127 * s, 187 * s, 0x553366 )
+		.setOrigin( 0 )
+		.setAlpha( debug ? 0.5 : 0.001 )
+		.setInteractive()
+	addExit({
 		game: game,
 		scene: scene,
 		exit: presentation,
-		nextScene: game.scenes.PRESENTATION,
+		nextScene: game.scenes.Presentation,
 	})
-	const windowToBerlin = scene.add.rectangle( 120 * s, 0, 175 * s, 200 * s, 0x553366)
+	const windowToBerlin = scene.add.rectangle( 120 * s, 0, 175 * s, 200 * s, 0x553366 )
 		.setOrigin( 0 )
 		.setInteractive()
 		.setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: windowToBerlin,
-		nextScene: game.scenes.WIMMELBILD,
+		nextScene: game.scenes.Wimmelbild,
 	})
-
-	log(`${scene.scene.key} created.`)
 }
 
 
 
 const createMelodia = ( scene: Phaser.Scene ): [ Phaser.GameObjects.Sprite, Phaser.GameObjects.Rectangle ] => {
-	const melodia = scene.add.sprite( 345 * s, 205 * s, game.sprites.SHOWROOM.MELODIA.key, 6 ).setOrigin( 0 )
+	const melodia = scene.add.sprite( 345 * s, 205 * s, game.sprites.showroom.melodia.key, 6 ).setOrigin( 0 )
 	const melodiaFrame = scene.add.rectangle( 345 * s, 220 * s, 80 * s, 180 * s, 0x990099 ).setOrigin( 0 )
 	melodiaFrame.setAlpha( debug ? 0.5 : 0.001 )
 	melodiaFrame.setInteractive()
@@ -286,65 +300,65 @@ const createMelodia = ( scene: Phaser.Scene ): [ Phaser.GameObjects.Sprite, Phas
 		skipMissedFrames: true,
 		frames: [
 			...Array.from( { length: 5 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 7,
 				})
 			).flat(),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 10,
 				end: 12,
 			}),
 			...Array.from( { length: 3 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 0,
 					end: 7,
 				})
 			).flat(),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 10,
 				end: 12,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 5,
 				end: 6,
 			}),
 			...Array.from( { length: 2 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 7,
 				})
 			).flat(),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 10,
 				end: 12,
 			}),
 			...Array.from( { length: 2 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 2,
 				})
 			).flat(),
 			...Array.from( { length: 2 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 7,
 				})
 			).flat(),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 5,
 				end: 6,
 			}),
 			...Array.from( { length: 6 }, () =>
-				scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 1,
 				})
@@ -358,69 +372,69 @@ const createMelodia = ( scene: Phaser.Scene ): [ Phaser.GameObjects.Sprite, Phas
 		repeat: 0,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 7,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 10,
 				end: 12,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 5,
 				end: 6,
 			}),
 			...Array.from( { length: 2 }, () => [
-				...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+				...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 					start: 1,
 					end: 1,
 				}),
 			]).flat(),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 7,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 7,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 10,
 				end: 12,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 5,
 				end: 6,
 			}),
@@ -433,15 +447,15 @@ const createMelodia = ( scene: Phaser.Scene ): [ Phaser.GameObjects.Sprite, Phas
 		repeat: 0,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 6,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 9,
 				end: 13,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.SHOWROOM.MELODIA.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.showroom.melodia.key, {
 				start: 5,
 				end: 6,
 			}),

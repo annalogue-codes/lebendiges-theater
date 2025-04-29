@@ -15,10 +15,12 @@
 
 import Phaser from 'phaser'
 
-import { game, getState, addState, h, s } from '../constants'
-import { debug, log } from '../utils/general'
-import * as Set from '../utils/set'
-import * as Up from '../utils/phaser'
+import * as Up from '../utils/phaser/common'
+
+import { game, h, s } from '../constants'
+import { debug } from '../utils/general'
+import { addExit } from '../utils/phaser/exit'
+
 
 /* Main part */
 
@@ -28,7 +30,7 @@ import * as Up from '../utils/phaser'
 export default class Stage extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.STAGE )
+		super( game.scenes.Stage )
 	}
 
 	// init() {
@@ -39,7 +41,7 @@ export default class Stage extends Phaser.Scene {
 
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {
@@ -48,84 +50,87 @@ export default class Stage extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	//Ambience
-	Up.addBackground({ game: game, scene: scene, key: game.images.STAGE.BACKGROUND.key })
-	// Up.addAmbience({ scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume })
-	// Up.addAmbience({ scene: scene, key: game.soundsPERSISTANT.AMBIENCE.JAZZ.key, volume: getState().entranceopen ? jazzVolume : 0 })
+	Up.addBackground({ game: game, scene: scene, key: game.images.stage.background.key })
+	// Up.addAmbience({ scene: scene, key: game.soundsPersistant.ambience.lofi.key, volume: game.soundsPersistant.ambience.lofi.volume })
+	// Up.addAmbience({ scene: scene, key: game.soundsPersistant.ambience.jazz.key, volume: game.state.get().entranceopen ? jazzVolume : 0 })
 
 	// Objects
 
 	// Exits
 	const wimmelBild = scene.add.rectangle( 0, 350 * s, 100 * s, 100 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: wimmelBild,
-		nextScene: game.scenes.WIMMELBILD,
+		nextScene: game.scenes.Wimmelbild,
 		// soundsToKeep: [
-		// 	game.soundsPERSISTANT.AMBIENCE.CITYRAIN,
-		// 	game.soundsPERSISTANT.AMBIENCE.JAZZ,
+		// 	game.soundsPersistant.ambience.cityrain,
+		// 	game.soundsPersistant.ambience.jazz,
 		// ],
 	})
 	const stagedoorLeft = scene.add.rectangle( 0, 0, 100 * s, 205 * s, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: stagedoorLeft,
-		nextScene: game.scenes.STAGEDOOR,
+		nextScene: game.scenes.Stagedoor,
 		// soundsToKeep: [
-		// 	game.soundsPERSISTANT.AMBIENCE.CITYRAIN,
-		// 	game.soundsPERSISTANT.AMBIENCE.JAZZ,
+		// 	game.soundsPersistant.ambience.cityrain,
+		// 	game.soundsPersistant.ambience.jazz,
 		// ],
 	})
 	const stagedoorRight = scene.add.rectangle( 725 * s, 0, 75 * s, h, 0x553366)
 		.setOrigin( 0 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: stagedoorRight,
-		nextScene: game.scenes.STAGEDOOR,
+		nextScene: game.scenes.Stagedoor,
 		// soundsToKeep: [
-		// 	game.soundsPERSISTANT.AMBIENCE.CITYRAIN,
-		// 	game.soundsPERSISTANT.AMBIENCE.JAZZ,
+		// 	game.soundsPersistant.ambience.cityrain,
+		// 	game.soundsPersistant.ambience.jazz,
 		// ],
 	})
 
 	// Sprites
-	const sams = scene.add.image( 340 * s, 205 * s, game.images.STAGE.SAMS.key ).setOrigin( 0 )
-	const samsHead = scene.add.sprite( 344 * s, 205 * s, game.sprites.STAGE.SAMSHEAD.key ).setOrigin( 0 )
+	const sams = scene.add.image( 340 * s, 205 * s, game.images.stage.sams.key ).setOrigin( 0 )
+	const samsHead = scene.add.sprite( 344 * s, 205 * s, game.sprites.stage.samshead.key ).setOrigin( 0 )
 
-	const neinhornTail = scene.add.sprite( 355 * s, 188 * s, game.sprites.STAGE.NEINHORNTAIL.key, 4 ).setOrigin( 0 )
-	const neinhorn = scene.add.image( 419 * s, 167 * s, game.images.STAGE.NEINHORN.key ).setOrigin( 0 )
-	const neinhornHead = scene.add.sprite( 512 * s, 233 * s, game.sprites.STAGE.NEINHORNHEAD.key ).setOrigin( 0 )
-	const neinhornLeg = scene.add.sprite( 483 * s, 257 * s, game.sprites.STAGE.NEINHORNLEG.key, 0 ).setOrigin( 0 )
+	const neinhornTail = scene.add.sprite( 355 * s, 188 * s, game.sprites.stage.neinhorntail.key, 4 ).setOrigin( 0 )
+	const neinhorn = scene.add.image( 419 * s, 167 * s, game.images.stage.neinhorn.key ).setOrigin( 0 )
+	const neinhornHead = scene.add.sprite( 512 * s, 233 * s, game.sprites.stage.neinhornhead.key ).setOrigin( 0 )
+	const neinhornLeg = scene.add.sprite( 483 * s, 257 * s, game.sprites.stage.neinhornleg.key, 0 ).setOrigin( 0 )
 
-	const ronja = ( Set.has( getState().peopleFound, 'neinhorn' ) ) ?
-		scene.add.image( 465 * s, 178 * s, game.images.STAGE.RONJA.key ).setOrigin( 0 ) :
-		scene.add.image( 380 * s, 200 * s, game.images.STAGE.RONJASTANDING.key ).setOrigin( 0 ).setScale( 0.85 )
-	const ronjaHead = ( Set.has( getState().peopleFound, 'neinhorn' ) ) ?
-		scene.add.sprite( 475 * s, 177.5 * s, game.sprites.STAGE.RONJAHEAD.key ).setOrigin( 0 ) :
-		scene.add.sprite( 381 * s, 201 * s, game.sprites.STAGE.RONJAHEAD.key ).setOrigin( 0 ).setScale( 0.85 )
+	console.log(
+		( game.state.get().peopleFound.includes( 'neinhorn' ) )
+	)
+	const ronja = ( game.state.get().peopleFound.includes( 'neinhorn' ) ) ?
+		scene.add.image( 465 * s, 178 * s, game.images.stage.ronja.key ).setOrigin( 0 ) :
+		scene.add.image( 380 * s, 200 * s, game.images.stage.ronjastanding.key ).setOrigin( 0 ).setScale( 0.85 )
+	const ronjaHead = ( game.state.get().peopleFound.includes( 'neinhorn' ) ) ?
+		scene.add.sprite( 475 * s, 177.5 * s, game.sprites.stage.ronjahead.key ).setOrigin( 0 ) :
+		scene.add.sprite( 381 * s, 201 * s, game.sprites.stage.ronjahead.key ).setOrigin( 0 ).setScale( 0.85 )
 
-	const albirea = scene.add.image( 420 * s, 269 * s, game.images.STAGE.ALBIREA.key ).setOrigin( 0 )
-	const albireaHead = scene.add.sprite( 434 * s, 271 * s, game.sprites.STAGE.ALBIREAHEAD.key ).setOrigin( 0 )
-	const albireaArm = scene.add.sprite( 384 * s, 310 * s, game.sprites.STAGE.ALBIREAARM.key ).setOrigin( 0 )
+	const albirea = scene.add.image( 420 * s, 269 * s, game.images.stage.albirea.key ).setOrigin( 0 )
+	const albireaHead = scene.add.sprite( 434 * s, 271 * s, game.sprites.stage.albireahead.key ).setOrigin( 0 )
+	const albireaArm = scene.add.sprite( 384 * s, 310 * s, game.sprites.stage.albireaarm.key ).setOrigin( 0 )
 
-	const bear = scene.add.image( 373 * s, 279 * s, game.images.STAGE.BEAR.key ).setOrigin( 0 )
-	const bearHead = scene.add.sprite( 384 * s, 279 * s, game.sprites.STAGE.BEARHEAD.key ).setOrigin( 0 )
-	const bearHand = scene.add.sprite( 368 * s, 355 * s, game.sprites.STAGE.BEARHAND.key, 0 ).setOrigin( 0 )
+	const bear = scene.add.image( 373 * s, 279 * s, game.images.stage.bear.key ).setOrigin( 0 )
+	const bearHead = scene.add.sprite( 384 * s, 279 * s, game.sprites.stage.bearhead.key ).setOrigin( 0 )
+	const bearHand = scene.add.sprite( 368 * s, 355 * s, game.sprites.stage.bearhand.key, 0 ).setOrigin( 0 )
 
-	const bach = scene.add.image( 577 * s, 224 * s, game.images.STAGE.BACH.key ).setOrigin( 0 )
-	const bachHead = scene.add.sprite( 582 * s, 223 * s, game.sprites.STAGE.BACHHEAD.key ).setOrigin( 0 )
+	const bach = scene.add.image( 577 * s, 224 * s, game.images.stage.bach.key ).setOrigin( 0 )
+	const bachHead = scene.add.sprite( 582 * s, 223 * s, game.sprites.stage.bachhead.key ).setOrigin( 0 )
 
-	const entlein = scene.add.image( 623 * s, 349 * s, game.images.STAGE.ENTLEIN.key ).setOrigin( 0 )
+	const entlein = scene.add.image( 623 * s, 349 * s, game.images.stage.entlein.key ).setOrigin( 0 )
 
-	const hauptmann = scene.add.image( 243 * s, 193 * s, game.images.STAGE.HAUPTMANN.key ).setOrigin( 0 )
-	const hauptmannHead = scene.add.sprite( 274 * s, 194 * s, game.sprites.STAGE.HAUPTMANNHEAD.key ).setOrigin( 0 )
+	const hauptmann = scene.add.image( 243 * s, 193 * s, game.images.stage.hauptmann.key ).setOrigin( 0 )
+	const hauptmannHead = scene.add.sprite( 274 * s, 194 * s, game.sprites.stage.hauptmannhead.key ).setOrigin( 0 )
 
-	addState({ peopleFound: Set.add( getState().peopleFound, 'mouse' )})
-	const mouse = scene.add.sprite( 234 * s, 326 * s, game.sprites.STAGE.MOUSE.key ).setOrigin( 0 )
+	// game.state.add({ peopleFound: [ ...new Set( game.state.get().peopleFound ).add('mouse') ] })
+	const mouse = scene.add.sprite( 234 * s, 326 * s, game.sprites.stage.mouse.key ).setOrigin( 0 )
 
 	// Animations
 	neinhornTail.anims.create({
@@ -135,19 +140,19 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 17000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNTAIL.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhorntail.key, {
 				start: 0,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNTAIL.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhorntail.key, {
 				start: 3,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNTAIL.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhorntail.key, {
 				start: 1,
 				end: 2,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNTAIL.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhorntail.key, {
 				frames: [ 1 ],
 			}),
 		],
@@ -160,15 +165,15 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 20000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNLEG.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornleg.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNLEG.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornleg.key, {
 				start: 2,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNLEG.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornleg.key, {
 				frames: [ 0 ]
 			}),
 		],
@@ -183,7 +188,7 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 2000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornhead.key, {
 				start: 6,
 				end: 8,
 			}),
@@ -195,11 +200,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornhead.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.NEINHORNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.neinhornhead.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -215,11 +220,11 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 1000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.RONJAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.ronjahead.key, {
 				start: 6,
 				end: 9,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.RONJAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.ronjahead.key, {
 				start: 8,
 				end: 6,
 			}),
@@ -231,15 +236,15 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.RONJAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.ronjahead.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.RONJAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.ronjahead.key, {
 				start: 3,
 				end: 1,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.RONJAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.ronjahead.key, {
 				frames: [ 4, 1, 2, 1, 0 ]
 			}),
 		],
@@ -254,7 +259,7 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 1000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 6,
 				end: 9,
 			}),
@@ -266,27 +271,27 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 3,
 				end: 2,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 3,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 3,
 				end: 1,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				start: 2,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireahead.key, {
 				frames: [ 0 ],
 			}),
 		],
@@ -300,16 +305,16 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 11000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAARM.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.albireaarm.key, {
 				start: 0,
 				end: 4,
 			}),
 			...Array(40).fill(
-				scene.anims.generateFrameNumbers( game.sprites.STAGE.ALBIREAARM.key, { frames: [ 4 ] })[0]
+				scene.anims.generateFrameNumbers( game.sprites.stage.albireaarm.key, { frames: [ 4 ] })[0]
 			),
 		],
 	})
-	if ( Set.has( getState().peopleFound, 'bear' ) ) albireaArm.play( 'hug' )
+	if ( game.state.get().peopleFound.includes('bear') ) albireaArm.play( 'hug' )
 
 	bachHead.anims.create({
 		key: 'blink',
@@ -319,11 +324,11 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 4000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				start: 8,
 				end: 12,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				frames: [ 14 ],
 			}),
 		],
@@ -334,23 +339,23 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				start: 1,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				start: 4,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				start: 1,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				start: 8,
 				end: 12,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BACHHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bachhead.key, {
 				frames: [ 0 ],
 			}),
 		],
@@ -364,11 +369,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 21000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BEARHAND.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bearhand.key, {
 				start: 1,
 				end: 3,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BEARHAND.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bearhand.key, {
 				start: 2,
 				end: 0,
 			}),
@@ -384,7 +389,7 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 5000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BEARHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bearhead.key, {
 				start: 0,
 				end: 7,
 			}),
@@ -396,7 +401,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.BEARHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.bearhead.key, {
 				frames: [ 1, 9, 10, 11, 12, 11, 10, 9, 1 ]
 			}),
 		],
@@ -410,7 +415,7 @@ function go ( scene: Phaser.Scene ): void {
 		repeatDelay: 9000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 7,
 				end: 15,
 			}),
@@ -422,31 +427,31 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 1,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 4,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 1,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 4,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 1,
 				end: 5,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				start: 4,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.HAUPTMANNHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.hauptmannhead.key, {
 				frames: [ 7, 9, 11, 13, 0 ]
 			}),
 		],
@@ -461,11 +466,11 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 5000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.SAMSHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.samshead.key, {
 				start: 0,
 				end: 0,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.SAMSHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.samshead.key, {
 				start: 0,
 				end: 0,
 			}),
@@ -477,11 +482,11 @@ function go ( scene: Phaser.Scene ): void {
 		repeat: -1,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.SAMSHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.samshead.key, {
 				start: 1,
 				end: 4,
 			}),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.SAMSHEAD.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.samshead.key, {
 				start: 3,
 				end: 0,
 			}),
@@ -497,13 +502,13 @@ function go ( scene: Phaser.Scene ): void {
 		delay: 7000,
 		skipMissedFrames: true,
 		frames: [
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.MOUSE.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.mouse.key, {
 				frames: [ 0, 1, 2, 2 ]
 			}),
 			...Array(10).fill(
-				scene.anims.generateFrameNumbers( game.sprites.STAGE.MOUSE.key, { frames: [ 3 ] })[0]
+				scene.anims.generateFrameNumbers( game.sprites.stage.mouse.key, { frames: [ 3 ] })[0]
 			),
-			...scene.anims.generateFrameNumbers( game.sprites.STAGE.MOUSE.key, {
+			...scene.anims.generateFrameNumbers( game.sprites.stage.mouse.key, {
 				frames: [ 2, 2, 1, 0 ]
 			}),
 		],
@@ -513,7 +518,7 @@ function go ( scene: Phaser.Scene ): void {
 	// Interactive frames for characters
 	const neinhornFrame = scene.add.rectangle( 475 * s, 195 * s, 80 * s, 110 * s, 0x553366)
 		.setOrigin( 0 ).setAlpha( debug ? 0.5 : 0.001 )
-	const ronjaFrame = ( Set.has( getState().peopleFound, 'neinhorn' ) ) ?
+	const ronjaFrame = ( game.state.get().peopleFound.includes('neinhorn') ) ?
 		scene.add.rectangle( 470 * s, 175 * s, 52 * s, 75 * s, 0x553366) :
 		scene.add.rectangle( 384 * s, 200 * s, 48 * s, 130 * s, 0x553366)
 	ronjaFrame.setOrigin( 0 ).setAlpha( debug ? 0.5 : 0.001 )
@@ -530,7 +535,7 @@ function go ( scene: Phaser.Scene ): void {
 	const samsFrame = scene.add.rectangle( 335 * s, 203 * s, 60 * s, 70 * s, 0x553366)
 		.setOrigin( 0 ).setAlpha( debug ? 0.5 : 0.001 )
 
-	if ( Set.has( getState().peopleFound, 'neinhorn' ) ) {
+	if ( game.state.get().peopleFound.includes('neinhorn') ) {
 		neinhornFrame.setInteractive()
 	} else {
 		neinhornFrame.setVisible( false )
@@ -539,14 +544,14 @@ function go ( scene: Phaser.Scene ): void {
 		neinhornHead.setVisible( false )
 		neinhornLeg.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'ronja' ) ) {
+	if ( game.state.get().peopleFound.includes('ronja') ) {
 		ronjaFrame.setInteractive()
 	} else {
 		ronjaFrame.setVisible( false )
 		ronja.setVisible( false )
 		ronjaHead.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'albirea' ) ) {
+	if ( game.state.get().peopleFound.includes('albirea') ) {
 		albireaFrame.setInteractive()
 	} else {
 		albireaFrame.setVisible( false )
@@ -554,7 +559,7 @@ function go ( scene: Phaser.Scene ): void {
 		albireaHead.setVisible( false )
 		albireaArm.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'bear' ) ) {
+	if ( game.state.get().peopleFound.includes('bear') ) {
 		bearFrame.setInteractive()
 	} else {
 		bearFrame.setVisible( false )
@@ -562,27 +567,27 @@ function go ( scene: Phaser.Scene ): void {
 		bearHead.setVisible( false )
 		bearHand.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'bach' ) ) {
+	if ( game.state.get().peopleFound.includes('bach') ) {
 		bachFrame.setInteractive()
 	} else {
 		bachFrame.setVisible( false )
 		bach.setVisible( false )
 		bachHead.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'entlein' ) ) {
+	if ( game.state.get().peopleFound.includes('entlein') ) {
 		entleinFrame.setInteractive()
 	} else {
 		entleinFrame.setVisible( false )
 		entlein.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'hauptmann' ) ) {
+	if ( game.state.get().peopleFound.includes('hauptmann') ) {
 		hauptmannFrame.setInteractive()
 	} else {
 		hauptmannFrame.setVisible( false )
 		hauptmann.setVisible( false )
 		hauptmannHead.setVisible( false )
 	}
-	if ( Set.has( getState().peopleFound, 'sams' ) ) {
+	if ( game.state.get().peopleFound.includes('sams') ) {
 		samsFrame.setInteractive()
 	} else {
 		samsFrame.setVisible( false )
@@ -627,13 +632,13 @@ function go ( scene: Phaser.Scene ): void {
 		}
 		characterWhoRepliedLast = p.character
 
-		if ( game.sounds.STAGE.hasOwnProperty( `${activeCharacter.name}_${characterWhoRepliedLast.name}` ) ) {
+		if ( game.sounds.stage.hasOwnProperty( `${characterWhoRepliedLast.name}_${activeCharacter.name}` ) ) {
 			lastSpeech?.stop()
 			p.character.head?.play('talk').once( Phaser.Animations.Events.ANIMATION_STOP, () => {
 				if ( p.character.head ) p.character.head.play('blink')
 			})
 
-			const { key, volume } = game.sounds.STAGE[ `${activeCharacter.name}_${characterWhoRepliedLast.name}` ]
+			const { key, volume } = game.sounds.stage[ `${characterWhoRepliedLast.name}_${activeCharacter.name}` ]
 			lastSpeech = scene.sound.get( key )
 			lastSpeech.play({ volume: volume })
 			lastSpeech.off( Phaser.Sound.Events.COMPLETE )
@@ -645,20 +650,20 @@ function go ( scene: Phaser.Scene ): void {
 				p.character.head?.stop().setFrame( 0 )
 			})
 		} else {
-			console.log(`${activeCharacter.name}-${characterWhoRepliedLast.name} not recorded yet.`)
+			console.log(`${characterWhoRepliedLast.name}_${activeCharacter.name} not recorded yet.`)
 		}
 	}
 
 	// // THIS WAS MEANT TO ENABLE CONVERSATIONS WITH MULTIPLE CHOICE OPTIONS.
-	// const iconNeinhorn   = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.NEINHORN.key   ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconRonja      = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.RONJA.key      ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconAlbirea    = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.ALBIREA.key    ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconBear       = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.BEAR.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconBach       = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.BACH.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconEntlein    = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.ENTLEIN.key    ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconHauptmann  = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.HAUPTMANN.key  ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// const iconSams       = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.SAMS.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
-	// // const iconAtze       = scene.add.sprite( 200 * s, 395 * s, game.sprites.STAGE.ATZE.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconNeinhorn   = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.neinhorn.key   ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconRonja      = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.ronja.key      ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconAlbirea    = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.albirea.key    ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconBear       = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.bear.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconBach       = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.bach.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconEntlein    = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.entlein.key    ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconHauptmann  = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.hauptmann.key  ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// const iconSams       = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.sams.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
+	// // const iconAtze       = scene.add.sprite( 200 * s, 395 * s, game.sprites.stage.atze.key       ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 )
 	//
 	// const characters = {
 	// 	neinhorn: { icon: iconNeinhorn, head: neinhornHead },
@@ -672,10 +677,10 @@ function go ( scene: Phaser.Scene ): void {
 	// 	// atze: { icon: iconAtze, head: undefined },
 	// }
 	//
-	// const iconQuestion    = scene.add.image( 265 * s, 403 * s, game.images.STAGE.QUESTION.key     ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
-	// const iconExclamation = scene.add.image( 315 * s, 403 * s, game.images.STAGE.EXCLAMATION.key  ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
-	// const iconFunny       = scene.add.image( 365 * s, 403 * s, game.images.STAGE.FUNNY.key        ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
-	// const iconBye         = scene.add.image( 415 * s, 403 * s, game.images.STAGE.BYE.key          ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
+	// const iconQuestion    = scene.add.image( 265 * s, 403 * s, game.images.stage.question.key     ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
+	// const iconExclamation = scene.add.image( 315 * s, 403 * s, game.images.stage.exclamation.key  ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
+	// const iconFunny       = scene.add.image( 365 * s, 403 * s, game.images.stage.funny.key        ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
+	// const iconBye         = scene.add.image( 415 * s, 403 * s, game.images.stage.bye.key          ).setOrigin( 0 ).setScale( 0.8 ).setAlpha( 0.001 ).setInteractive().setVisible( false )
 	//
 	// const icons = [
 	// 	iconQuestion,
@@ -735,8 +740,5 @@ function go ( scene: Phaser.Scene ): void {
 	// 		}
 	// 	})
 	// })
-
-
-	log(`${scene.scene.key} created.`)
 
 }

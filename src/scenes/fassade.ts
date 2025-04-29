@@ -15,11 +15,12 @@
 
 import Phaser from 'phaser'
 
-import { game, getState, addState, w, h, s } from '../constants'
-import * as Cat from '../sprites/cat'
+import { game, w, h, s } from '../constants'
+import { debug } from '../utils/general'
+import { addExit } from '../utils/phaser/exit'
 
-import { debug, log } from '../utils/general'
-import * as Up from '../utils/phaser'
+import * as Up from '../utils/phaser/common'
+import * as Cat from '../sprites/cat'
 
 /* Main part */
 
@@ -28,7 +29,7 @@ const jazzVolume = 0.1
 export default class Fassade extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.FASSADE )
+		super( game.scenes.Fassade )
 	}
 
 	// init() {
@@ -43,7 +44,7 @@ export default class Fassade extends Phaser.Scene {
 	create() {
 
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {
@@ -52,18 +53,18 @@ export default class Fassade extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	//Ambience
-	Up.addBackground({ game: game, scene: scene, key: game.images.FASSADE.BACKGROUND.key })
-	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.CITYRAIN.key, volume: game.soundsPersistant.AMBIENCE.CITYRAIN.volume, fadeIn: 10000 })
-	const jazzVolumeStart = getState().entranceopen ? jazzVolume : 0
-	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.AMBIENCE.JAZZ.key, volume: jazzVolumeStart })
+	Up.addBackground({ game: game, scene: scene, key: game.images.fassade.background.key })
+	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.cityrain.key, volume: game.soundsPersistant.ambience.cityrain.volume, fadeIn: 10000 })
+	const jazzVolumeStart = game.state.get().entranceopen ? jazzVolume : 0
+	Up.addAmbience({ game: game, scene: scene, key: game.soundsPersistant.ambience.jazz.key, volume: jazzVolumeStart })
 
 	addDoors( scene )
 
-	scene.add.image( 411 * s, 276 * s, game.images.FASSADE.PILLAR1.key ).setOrigin( 0 )
+	scene.add.image( 411 * s, 276 * s, game.images.fassade.pillar1.key ).setOrigin( 0 )
 		.setSize( 69 * s, 128 * s )
 		.setDisplaySize( 69 * s, 128 * s )
 		.setDepth( 1 )
-	scene.add.image( 527 * s, 282 * s, game.images.FASSADE.PILLAR2.key ).setOrigin( 0 )
+	scene.add.image( 527 * s, 282 * s, game.images.fassade.pillar2.key ).setOrigin( 0 )
 		.setSize( 54 * s, 116 * s )
 		.setDisplaySize( 54 * s, 116 * s )
 		.setDepth( 8 )
@@ -83,17 +84,17 @@ function go ( scene: Phaser.Scene ): void {
 
 	motions.fromLeft({ cat: cat })
 
-	scene.add.particles(0, 50 * s, game.images.FASSADE.RAINDROP.key, {
+	scene.add.particles(0, 50 * s, game.images.fassade.raindrop.key, {
 		// gravityY: 200,
 		x: { min: 0, max: w },
 		y: -100 * s,
 		frequency: 50,
-		lifespan: { min: 2000, max: 2500 },
+		// lifespan: { min: 2000, max: 2500 },
+		lifespan: { min: 3000, max: 3500 },
 		// speedY: { min: 50, max: 350 },
 		speedY: { min: 125 * s, max: 275 * s },
 		scaleX: { min: 1, max: 2 },
-		// scaleY: { min: 0.25, max: 4.5 },
-		scaleY: 8,
+		scaleY: { min: 1, max: 4 },
 		// quantity: {min: 5, max: 15},
 		quantity: 1,
 		blendMode: 'ADD',
@@ -105,53 +106,51 @@ function go ( scene: Phaser.Scene ): void {
 		.setDepth( 10 )
 		.setAlpha( debug ? 0.5 : 0.001 )
 
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
-		nextScene: game.scenes.ENTRANCE,
+		nextScene: game.scenes.Entrance,
 		exit: entrance,
 		soundsToKeep: [
-			game.soundsPersistant.AMBIENCE.CITYRAIN,
-			game.soundsPersistant.AMBIENCE.JAZZ,
+			game.soundsPersistant.ambience.cityrain,
+			game.soundsPersistant.ambience.jazz,
 		],
 	})
 
 	// back to Wimmelbild
-	if ( getState().arrivedAtWimmelbild ) {
+	if ( game.state.get().arrivedAtWimmelbild ) {
 		const wimmelbild = scene.add.rectangle( 0 * w, 0.1 * h, 0.17 * w, 0.9 * h, 0x553366)
 			.setOrigin( 0 )
 			.setDepth( 10 )
 			.setAlpha( debug ? 0.5 : 0.001 )
 
-		Up.addExit({
+		addExit({
 			game: game,
 			scene: scene,
-			nextScene: game.scenes.WIMMELBILD,
+			nextScene: game.scenes.Wimmelbild,
 			exit: wimmelbild,
 		})
 	}
-
-	log(`${scene.scene.key} created.`)
 }
 
 function addDoors ( scene: Phaser.Scene ): void {
-	scene.add.image( 466 * s, 345 * s, game.images.FASSADE.DOORINNER.key ).setOrigin( 0 )
+	scene.add.image( 466 * s, 345 * s, game.images.fassade.doorinner.key ).setOrigin( 0 )
 		.setSize(        35 * s, 44 * s )
 		.setDisplaySize( 35 * s, 44 * s )
-	const doorLeft = scene.add.image( 467 * s, 346 * s, game.images.FASSADE.DOORLEFT.key ).setOrigin( 0 )
+	const doorLeft = scene.add.image( 467 * s, 346 * s, game.images.fassade.doorleft.key ).setOrigin( 0 )
 		.setSize(        18 * s, 43 * s )
 		.setDisplaySize( 18 * s, 43 * s )
-	const doorRight = scene.add.image( 483 * s, 346 * s, game.images.FASSADE.DOORRIGHT.key ).setOrigin( 0 )
+	const doorRight = scene.add.image( 483 * s, 346 * s, game.images.fassade.doorright.key ).setOrigin( 0 )
 		.setSize(        16 * s, 42 * s )
 		.setDisplaySize( 16 * s, 42 * s )
 
 	const ease = Phaser.Math.Easing.Cubic.InOut
 	const duration = 1500
 
-	const jazz = scene.sound.get( game.soundsPersistant.AMBIENCE.JAZZ.key )
+	const jazz = scene.sound.get( game.soundsPersistant.ambience.jazz.key )
 	function openDoors (p?: { now?: boolean }): void {
 		const delay = ( p?.now ) ? 0 : Phaser.Math.Between( 3, 10 )
-		const dura  = ( p?.now ) ? 0 : duration
+		const dura  = ( p?.now ) ? 1 : duration
 		scene.tweens.add({
 			targets: doorLeft,
 			x: doorLeft.x - doorLeft.width,
@@ -172,8 +171,8 @@ function addDoors ( scene: Phaser.Scene ): void {
 			volume: jazzVolume,
 			duration: dura,
 			delay: delay * 1000,
-			onStart: () => {
-				addState({ entranceopen: true })
+			onStart: ( tween, targets ) => {
+				game.state.add({ entranceopen: true })
 			},
 			onComplete: () => {
 				closeDoors()
@@ -189,7 +188,7 @@ function addDoors ( scene: Phaser.Scene ): void {
 			ease: ease,
 			delay: delay,
 			onStart: () => {
-				addState({ entranceopen: false })
+				game.state.add({ entranceopen: false })
 			},
 			onComplete: () => {
 				openDoors()
@@ -209,7 +208,7 @@ function addDoors ( scene: Phaser.Scene ): void {
 			delay: delay,
 		})
 	}
-	if ( getState().entranceopen ) {
+	if ( game.state.get().entranceopen ) {
 		openDoors({ now: true })
 		return
 	}
@@ -318,7 +317,7 @@ const motions: { [key: string]: Cat.Motion } = {
 	},
 
 	toDoor: ( p ) => {
-		// const pillarTwo = p.cat.follower.scene.cache.obj.get( game.images.FASSADEPILLARTWO ) as Phaser.GameObjects.Image
+		// const pillarTwo = p.cat.follower.scene.cache.obj.get( game.images.fassadepillartwo ) as Phaser.GameObjects.Image
 		// pillarTwo.setZ( 10 )
 
 		const duration = 6000

@@ -14,25 +14,22 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Phaser from 'phaser'
-import { game, getState, s } from '../constants'
-import { debug, log } from '../utils/general'
-import * as Up from '../utils/phaser'
+
+import * as Up from '../utils/phaser/common'
 import * as Set from '../utils/set'
 import * as Inventory from '../utils/inventory'
 
-/* Main part */
+import { game, s } from '../constants'
+import { debug } from '../utils/general'
+import { addExit } from '../utils/phaser/exit'
 
-// enum Position {
-// 	floorFront = 'floorFront',
-// 	barFront = 'barFront',
-// 	barEnd = 'barEnd',
-// }
+/* Main part */
 
 
 export default class Paint extends Phaser.Scene {
 
 	constructor() {
-		super( game.scenes.PAINT )
+		super( game.scenes.Paint )
 	}
 
 	// init() {
@@ -44,7 +41,7 @@ export default class Paint extends Phaser.Scene {
 	create() {
 		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
 		Inventory.load({ game: game, scene: this })
-		Up.loadAssets({ game: game, scene: this })
+		Up.assets.load({ game: game, scene: this })
 	}
 
 	// update() {
@@ -53,15 +50,17 @@ export default class Paint extends Phaser.Scene {
 
 function go ( scene: Phaser.Scene ): void {
 	// Ambience
-	Up.addBackground({ game: game, scene: scene, key: game.images.PAINT.BACKGROUND.key })
-	// Up.addAmbience({ scene: scene, key: game.soundsPERSISTANT.AMBIENCE.LOFI.key, volume: game.soundsPERSISTANT.AMBIENCE.LOFI.volume * (2/3), fadeIn: 3000 })
+	Up.addBackground({ game: game, scene: scene, key: game.images.paint.background.key })
+	// Up.addAmbience({ scene: scene, key: game.soundsPersistant.ambience.lofi.key, volume: game.soundsPersistant.ambience.lofi.volume * (2/3), fadeIn: 3000 })
 
 	// Objects
 
 	// Stray tems
-	if ( !Set.toArray( getState().inventory ).includes( 'crystals' ) ) {
-		const crystals = scene.add.image( 50 * s, 50 * s, game.images.PAINT.crystals.key ).setInteractive()
-		crystals.on( 'pointerup', () => { Inventory.add( 'crystals', crystals ) })
+	if ( !game.state.get().inventory.includes( 'crystals' ) ) {
+		const chest = Inventory.createChest({ game, scene })
+
+		const crystals = scene.add.image( 50 * s, 50 * s, game.images.paint.crystals.key ).setInteractive()
+		crystals.on( 'pointerup', () => { chest.foundItem({ item: 'crystals', image: crystals }) })
 	}
 
 
@@ -72,7 +71,7 @@ function go ( scene: Phaser.Scene ): void {
 		paper.saveTexture( 'painting' )
 	}
 
-	let brush = scene.textures.getFrame( game.images.PAINT.BRUSH2.key )
+	let brush = scene.textures.getFrame( game.images.paint.brush2.key )
 	let color = 0xFFC740
 
 	const yellow = scene.add.rectangle( 55 * s, 235 * s, 55 * s, 50 * s, 0x993399 )
@@ -122,9 +121,9 @@ function go ( scene: Phaser.Scene ): void {
 	brush1.off( Phaser.Input.Events.POINTER_UP )
 	brush2.off( Phaser.Input.Events.POINTER_UP )
 	brush3.off( Phaser.Input.Events.POINTER_UP )
-	brush1.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.PAINT.BRUSH1.key ) })
-	brush2.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.PAINT.BRUSH2.key ) })
-	brush3.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.PAINT.BRUSH3.key ) })
+	brush1.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.paint.brush1.key ) })
+	brush2.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.paint.brush2.key ) })
+	brush3.on( Phaser.Input.Events.POINTER_UP, () => { brush = scene.textures.getFrame( game.images.paint.brush3.key ) })
 
 	scene.input.on('pointermove', ( pointer: Phaser.Input.Pointer ) => {
 		if (pointer.isDown) {
@@ -141,14 +140,11 @@ function go ( scene: Phaser.Scene ): void {
 		.setOrigin( 0 )
 		.setInteractive()
 	showroom.alpha = debug ? 0.5 : 0.001
-	Up.addExit({
+	addExit({
 		game: game,
 		scene: scene,
 		exit: showroom,
-		nextScene: game.scenes.SHOWROOM,
+		nextScene: game.scenes.Showroom,
 	})
-
-	log(`${scene.scene.key} created.`)
 }
-
 
