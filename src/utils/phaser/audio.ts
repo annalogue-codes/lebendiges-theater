@@ -12,7 +12,7 @@ function add ({ scene, keyAndVolume }: {
 	keyAndVolume: KeyAndVolume,
 }): SoundAndVolume {
 
-	const sound = scene.sound.add( keyAndVolume.key, { volume: keyAndVolume.volume } )
+	const sound = scene.sound.add( keyAndVolume.key, { volume: keyAndVolume.volume } ) as Sound
 	return { sound: sound, volume: keyAndVolume.volume }
 }
 

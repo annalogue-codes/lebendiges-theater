@@ -15,7 +15,6 @@
 
 import Phaser from 'phaser'
 
-import * as Up from '../utils/phaser/common'
 import * as Audio from '../utils/phaser/audio'
 import * as Exit from '../utils/phaser/exit'
 
@@ -194,7 +193,7 @@ const newCat = ( scene: Phaser.Scene, startX: number, startY: number, scale: num
 		position: undefined,
 	}
 
-	const purr = cat.follower.scene.sound.get( game.soundsPersistant.cat.purr.key ) as Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
+	const purr = cat.follower.scene.sound.get( game.soundsPersistant.cat.purr.key ) as Phaser.Sound.WebAudioSound
 	purr.on('complete', () => {
 		follower.off('pointerover')
 		follower.once('pointerover', () => {
