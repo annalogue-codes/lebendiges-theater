@@ -14,10 +14,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-const debug = true
+const debug = false
 const keepScene = false
-const presentation = true
-const resume = true
+const presentation = false
+const resume = false
 
 function log <T>(s: any, content?: T): T | undefined {
 	if (debug) console.log(s)
