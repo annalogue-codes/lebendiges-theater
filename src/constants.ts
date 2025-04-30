@@ -497,17 +497,17 @@ const sounds = {
 	looper: {
 		switchsmall:  { key: 'backstage/switchSmall.mp3'    , volume: 1 },
 
-		pop_punk_drums:   { key: 'looper/poppunk/drums.wav'       , volume: 1 },
-		pop_punk_bass:    { key: 'looper/poppunk/bass.wav'        , volume: 1 },
-		pop_punk_chords:  { key: 'looper/poppunk/chords.wav'      , volume: 1 },
-		pop_punk_melody:  { key: 'looper/poppunk/melody.wav'      , volume: 1 },
-		pop_punk_texture: { key: 'looper/poppunk/texture.wav'     , volume: 1 },
+		pop_punk_drums:   { key: 'looper/poppunk/drums.mp3'       , volume: 1 },
+		pop_punk_bass:    { key: 'looper/poppunk/bass.mp3'        , volume: 1 },
+		pop_punk_chords:  { key: 'looper/poppunk/chords.mp3'      , volume: 1 },
+		pop_punk_melody:  { key: 'looper/poppunk/melody.mp3'      , volume: 1 },
+		pop_punk_texture: { key: 'looper/poppunk/texture.mp3'     , volume: 1 },
 
-		boom_bap_drums:   { key: 'looper/boombap/drums.wav'       , volume: 1 },
-		boom_bap_bass:    { key: 'looper/boombap/bass2.wav'        , volume: 1 },
-		boom_bap_chords:  { key: 'looper/boombap/chords.wav'      , volume: 1 },
-		boom_bap_melody:  { key: 'looper/boombap/melody.wav'      , volume: 1 },
-		boom_bap_texture: { key: 'looper/boombap/percussion.wav'  , volume: 1 },
+		boom_bap_drums:   { key: 'looper/boombap/drums.mp3'       , volume: 1 },
+		boom_bap_bass:    { key: 'looper/boombap/bass2.mp3'        , volume: 1 },
+		boom_bap_chords:  { key: 'looper/boombap/chords.mp3'      , volume: 1 },
+		boom_bap_melody:  { key: 'looper/boombap/melody.mp3'      , volume: 1 },
+		boom_bap_texture: { key: 'looper/boombap/percussion.mp3'  , volume: 1 },
 
 		ghost_drums:   { key: 'looper/ghost/drums.mp3'       , volume: 1 },
 		ghost_bass:    { key: 'looper/ghost/bass.mp3'        , volume: 1 },
