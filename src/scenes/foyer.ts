@@ -200,8 +200,22 @@ function go ( scene: Phaser.Scene ): void {
 	}
 
 	// Guitar
-	const guitarWasWollenWir = Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_waswollenwirtrinken })
-	const guitarSounds = [ guitarWasWollenWir ]
+	const guitarSounds = [
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_00 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_01 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_02 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_03 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_04 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_05 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_06 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_07 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_08 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_09 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_10 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_11 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_12 }),
+		Audio.get({ scene: scene, keyAndVolume: game.sounds.foyer.guitar_13 }),
+	]
 
 	const guitar = scene.add.rectangle( 450, 600, 90, 180, 0x553366 )
 		.setOrigin( 0 ).setDepth( 2 ).setInteractive().setAlpha( debug ? 0.5 : 0.001 )

@@ -472,6 +472,9 @@ async function go ( scene: Phaser.Scene ): Promise<void> {
 		scene: scene,
 		exit: showroomBottom,
 		nextScene: game.scenes.Showroom,
+		pre: () => {
+			disconnectDelayAndConvolver ({ context, masterGain, audiobus, delay, convolver })
+		}
 	})
 	const showroomLowerLeft = scene.add.rectangle( 0, 600, 110, 220, 0x553366).setOrigin( 0 ).setInteractive()
 		.setAlpha( debug ? 0.5 : 0.001 )
@@ -480,6 +483,9 @@ async function go ( scene: Phaser.Scene ): Promise<void> {
 		scene: scene,
 		exit: showroomLowerLeft,
 		nextScene: game.scenes.Showroom,
+		pre: () => {
+			disconnectDelayAndConvolver ({ context, masterGain, audiobus, delay, convolver })
+		}
 	})
 	const showroomUpperLeft = scene.add.rectangle( 0, 0, 90, 600, 0x553366).setOrigin( 0 ).setInteractive()
 		.setAlpha( debug ? 0.5 : 0.001 )
@@ -488,6 +494,9 @@ async function go ( scene: Phaser.Scene ): Promise<void> {
 		scene: scene,
 		exit: showroomUpperLeft,
 		nextScene: game.scenes.Showroom,
+		pre: () => {
+			disconnectDelayAndConvolver ({ context, masterGain, audiobus, delay, convolver })
+		}
 	})
 	const showroomLowerRight = scene.add.rectangle( 1500, 600, 100, 220, 0x553366).setOrigin( 0 ).setInteractive()
 		.setAlpha( debug ? 0.5 : 0.001 )
@@ -496,6 +505,9 @@ async function go ( scene: Phaser.Scene ): Promise<void> {
 		scene: scene,
 		exit: showroomLowerRight,
 		nextScene: game.scenes.Showroom,
+		pre: () => {
+			disconnectDelayAndConvolver ({ context, masterGain, audiobus, delay, convolver })
+		}
 	})
 }
 
@@ -558,5 +570,29 @@ function updateArcMask(p: { playlight: Playlight }) {
 	)
 	p.playlight.maskShape.strokePath()
 	p.playlight.redCircle.setMask( p.playlight.maskShape.createGeometryMask() )
+}
+
+// @ts-ignore: allow any type here.
+function disconnectDelayAndConvolver (p: { context, masterGain, audiobus, delay, convolver }) {
+	try {
+		p.masterGain.disconnect( p.delay )
+	} catch (e) {
+		console.log('These audio sources are already disconnected.')
+	}
+	try {
+		p.delay.disconnect( p.audiobus )
+	} catch (e) {
+		console.log('These audio sources are already disconnected.')
+	}
+	try {
+		p.audiobus.disconnect( p.convolver )
+	} catch (e) {
+		console.log('These audio sources are already disconnected.')
+	}
+	try {
+		p.convolver.disconnect( p.context.destination )
+	} catch (e) {
+		console.log('These audio sources are already disconnected.')
+	}
 }
 

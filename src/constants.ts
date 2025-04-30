@@ -20,7 +20,7 @@
 import * as Up from './utils/phaser/common'
 
 // ascii letters only
-const VERSION = '1.0.59'
+const VERSION = '1.0.61'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
 
@@ -480,13 +480,26 @@ const sounds = {
 		missing_ronja:               { key: 'foyer/atze/missing_ronja.mp3'          , volume: 1 },
 		missing_sams:                { key: 'foyer/atze/missing_sams.mp3'           , volume: 1 },
 		// others characters
-		snowman:                     { key: 'ambience/silence.mp3'                   , volume: 0.01 },
-		bin_barf:                    { key: 'foyer/bin_barf.mp3'                     , volume: 1 },
-		bin_chewinggum:              { key: 'foyer/bin_chewinggum.mp3'               , volume: 1 },
-		bin_morgensabends:           { key: 'foyer/bin_morgensabends.mp3'            , volume: 1 },
-		bin_obiwan:                  { key: 'foyer/bin_obiwan.mp3'                   , volume: 1 },
-		bin_r2d2:                    { key: 'foyer/bin_r2d2.mp3'                     , volume: 1 },
-		guitar_waswollenwirtrinken:  { key: 'foyer/guitar_waswollenwirtrinken.mp3'   , volume: 1 },
+		snowman:                     { key: 'ambience/silence.mp3'                  , volume: 0.01 },
+		bin_barf:                    { key: 'foyer/bin_barf.mp3'                    , volume: 1 },
+		bin_chewinggum:              { key: 'foyer/bin_chewinggum.mp3'              , volume: 1 },
+		bin_morgensabends:           { key: 'foyer/bin_morgensabends.mp3'           , volume: 1 },
+		bin_obiwan:                  { key: 'foyer/bin_obiwan.mp3'                  , volume: 1 },
+		bin_r2d2:                    { key: 'foyer/bin_r2d2.mp3'                    , volume: 1 },
+		guitar_00:                   { key: 'foyer/guitar_00.mp3'                   , volume: 1 },
+		guitar_01:                   { key: 'foyer/guitar_01.mp3'                   , volume: 1 },
+		guitar_02:                   { key: 'foyer/guitar_02.mp3'                   , volume: 1 },
+		guitar_03:                   { key: 'foyer/guitar_03.mp3'                   , volume: 1 },
+		guitar_04:                   { key: 'foyer/guitar_04.mp3'                   , volume: 1 },
+		guitar_05:                   { key: 'foyer/guitar_05.mp3'                   , volume: 1 },
+		guitar_06:                   { key: 'foyer/guitar_06.mp3'                   , volume: 1 },
+		guitar_07:                   { key: 'foyer/guitar_07.mp3'                   , volume: 1 },
+		guitar_08:                   { key: 'foyer/guitar_08.mp3'                   , volume: 1 },
+		guitar_09:                   { key: 'foyer/guitar_09.mp3'                   , volume: 1 },
+		guitar_10:                   { key: 'foyer/guitar_10.mp3'                   , volume: 1 },
+		guitar_11:                   { key: 'foyer/guitar_11.mp3'                   , volume: 1 },
+		guitar_12:                   { key: 'foyer/guitar_12.mp3'                   , volume: 1 },
+		guitar_13:                   { key: 'foyer/guitar_13.mp3'                   , volume: 1 },
 	},
 	hallway: {
 		foundTrumpet:                { key: 'hallway/bouncer_foundtrumpet.mp3'       , volume: 1 },
