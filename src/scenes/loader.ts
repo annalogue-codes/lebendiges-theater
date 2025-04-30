@@ -16,7 +16,7 @@
 
 import Phaser from 'phaser'
 
-import { resume, onMobileDevice, keepScene } from '../utils/general'
+import { resume, onMobileDevice, keepScene, log } from '../utils/general'
 import { game, s } from '../constants'
 
 // delete old version caches
@@ -69,22 +69,30 @@ export default class Loader extends Phaser.Scene {
 
 		// Add initial assets into the cache
 		const addInitialAssetsToCache = async () => {
-			for ( const [scene, assets] of Object.entries( game.images ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await game.cache.add( asset.key )
+
+			log(`Adding initial assets to cache.`)
+			for ( const scene of game.initialScenes ) {
+				if ( game.images[ scene ] )  for ( const asset of Object.values( game.images[ scene ] ) ) {
+					await game.cache.add( asset.key )
+				}
+				if ( game.sprites[ scene ] ) for ( const asset of Object.values( game.sprites[ scene ] ) ) {
+					await game.cache.add( asset.key )
+				}
+				if ( game.sounds[ scene ] )  for ( const asset of Object.values( game.sounds[ scene ] ) ) {
+					await game.cache.add( asset.key )
+				}
 			}
-			for ( const [scene, assets] of Object.entries( game.sprites ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await game.cache.add( asset.key )
-			}
-			for ( const [scene, assets] of Object.entries( game.sounds ) ) if ( game.initialScenes.includes( scene ) )  for ( const asset of Object.values( assets ) ) {
-				await game.cache.add( asset.key )
-			}
+
 			for ( const category of Object.values( game.soundsPersistant ) ) for ( const value of Object.values( category ) ) {
 				await game.cache.add( value.key )
 			}
+
 			// Load ambient sounds
 			for ( const category of Object.values( game.soundsPersistant ) ) for ( const value of Object.values( category ) ) {
 				await game.cache.loadAudio({ scene: this, key: value.key })
 			}
+
+			// Load persistant sprites
 			for ( const spritesheet of Object.values( game.sprites.cat ) ) {
 				await game.cache.loadSprite({ scene: this, key: spritesheet.key, width: spritesheet.width, height: spritesheet.height })
 			}

@@ -56,7 +56,7 @@ const config: Phaser.Types.Core.GameConfig = {
 		// Smooth:
 		pixelArt: false,
 		antialias: true,
-		// Rough:
+		// // Rough:
 		// pixelArt: true,
 		// antialias: false,
 	},
@@ -64,6 +64,10 @@ const config: Phaser.Types.Core.GameConfig = {
 		forceSetTimeOut: true,
 		target: 30
 	},
+	audio: {
+		// ensure WebAudio is used
+        disableWebAudio: false
+    },
 	physics: {
 		default: 'arcade',
 		arcade: {

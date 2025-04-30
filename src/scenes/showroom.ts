@@ -262,16 +262,16 @@ function go ( scene: Phaser.Scene ): void {
 		exit: looper,
 		nextScene: game.scenes.Looper,
 	})
-	const presentation = scene.add.rectangle( 575 * s, 120 * s, 127 * s, 187 * s, 0x553366 )
-		.setOrigin( 0 )
-		.setAlpha( debug ? 0.5 : 0.001 )
-		.setInteractive()
-	addExit({
-		game: game,
-		scene: scene,
-		exit: presentation,
-		nextScene: game.scenes.Presentation,
-	})
+	// const presentation = scene.add.rectangle( 575 * s, 120 * s, 127 * s, 187 * s, 0x553366 )
+	// 	.setOrigin( 0 )
+	// 	.setAlpha( debug ? 0.5 : 0.001 )
+	// 	.setInteractive()
+	// addExit({
+	// 	game: game,
+	// 	scene: scene,
+	// 	exit: presentation,
+	// 	nextScene: game.scenes.Presentation,
+	// })
 	const windowToBerlin = scene.add.rectangle( 120 * s, 0, 175 * s, 200 * s, 0x553366 )
 		.setOrigin( 0 )
 		.setInteractive()

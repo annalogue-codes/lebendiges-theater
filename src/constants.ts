@@ -20,7 +20,7 @@
 import * as Up from './utils/phaser/common'
 
 // ascii letters only
-const VERSION = '1.0.39'
+const VERSION = '1.0.59'
 const NAMEOFGAME = 'atzeunddu'
 const INITIALSCENE = 'fassade'
 
@@ -183,6 +183,8 @@ const images = {
 	},
 	looper: {
 		background:     { key: `looper/${WIDTH}x${HEIGHT}/background.jpg` },
+		darkCircle:     { key: `looper/${WIDTH}x${HEIGHT}/darkCircle.png` },
+		redCircle:      { key: `looper/${WIDTH}x${HEIGHT}/redCircle.png` },
 	},
 	paint: {
 		background:     { key: `paint/${WIDTH}x${HEIGHT}/background.jpg` },
@@ -495,29 +497,29 @@ const sounds = {
 	looper: {
 		switchsmall:  { key: 'backstage/switchSmall.mp3'    , volume: 1 },
 
-		bpm70drums:   { key: 'looper/MeyerChoir_MomFX_C1.mp3' , volume: 1 },
-		bpm70bass:    { key: 'looper/MeyerChoir_MomFX_E1.mp3' , volume: 1 },
-		bpm70keys:    { key: 'looper/MeyerChoir_MomFX_G1.mp3' , volume: 1 },
-		bpm70vocals:  { key: 'looper/MeyerChoir_MomFX_B1.mp3' , volume: 1 },
-		bpm70lead:    { key: 'looper/MeyerChoir_MomFX_D2.mp3' , volume: 1 },
+		pop_punk_drums:   { key: 'looper/poppunk/drums.wav'       , volume: 1 },
+		pop_punk_bass:    { key: 'looper/poppunk/bass.wav'        , volume: 1 },
+		pop_punk_chords:  { key: 'looper/poppunk/chords.wav'      , volume: 1 },
+		pop_punk_melody:  { key: 'looper/poppunk/melody.wav'      , volume: 1 },
+		pop_punk_texture: { key: 'looper/poppunk/texture.wav'     , volume: 1 },
 
-		bpm80drums:   { key: 'piano/sfx/typewriter1.mp3'   , volume: 1 },
-		bpm80bass:    { key: 'piano/sfx/horsegallop.mp3'   , volume: 1 },
-		bpm80keys:    { key: 'piano/sfx/bubbles.mp3'       , volume: 1 },
-		bpm80vocals:  { key: 'piano/sfx/typewriter2.mp3'   , volume: 1 },
-		bpm80lead:    { key: 'piano/sfx/bottlepop.mp3'     , volume: 1 },
+		boom_bap_drums:   { key: 'looper/boombap/drums.wav'       , volume: 1 },
+		boom_bap_bass:    { key: 'looper/boombap/bass2.wav'        , volume: 1 },
+		boom_bap_chords:  { key: 'looper/boombap/chords.wav'      , volume: 1 },
+		boom_bap_melody:  { key: 'looper/boombap/melody.wav'      , volume: 1 },
+		boom_bap_texture: { key: 'looper/boombap/percussion.wav'  , volume: 1 },
 
-		bpm120drums:   { key: 'piano/sfx/swoop1.mp3'       , volume: 1 },
-		bpm120bass:    { key: 'piano/sfx/swoop2.mp3'       , volume: 1 },
-		bpm120keys:    { key: 'piano/sfx/swoop3.mp3'       , volume: 1 },
-		bpm120vocals:  { key: 'piano/sfx/helicopter.mp3'   , volume: 1 },
-		bpm120lead:    { key: 'piano/sfx/footstep.mp3'       , volume: 1 },
+		ghost_drums:   { key: 'looper/ghost/drums.mp3'       , volume: 1 },
+		ghost_bass:    { key: 'looper/ghost/bass.mp3'        , volume: 1 },
+		ghost_chords:  { key: 'looper/ghost/chords.mp3'      , volume: 1 },
+		ghost_melody:  { key: 'looper/ghost/melody.mp3'      , volume: 1 },
+		ghost_texture: { key: 'looper/ghost/texture.mp3'     , volume: 1 },
 
-		bpm140drums:   { key: 'looper/SoftVocal_Ahh_Sandy C1.mp3' , volume: 1 },
-		bpm140bass:    { key: 'looper/SoftVocal_Ahh_Sandy E1.mp3' , volume: 1 },
-		bpm140keys:    { key: 'looper/SoftVocal_Ahh_Sandy G1.mp3' , volume: 1 },
-		bpm140vocals:  { key: 'looper/SoftVocal_Ahh_Sandy C2.mp3' , volume: 1 },
-		bpm140lead:    { key: 'looper/SoftVocal_Ahh_Sandy B0.mp3' , volume: 1 },
+		indian_drums:   { key: 'looper/indian/drums.mp3'       , volume: 1 },
+		indian_bass:    { key: 'looper/indian/bass.mp3'        , volume: 1 },
+		indian_chords:  { key: 'looper/indian/chords.mp3'      , volume: 1 },
+		indian_melody:  { key: 'looper/indian/melody.mp3'      , volume: 1 },
+		indian_texture: { key: 'looper/indian/texture.mp3'     , volume: 1 },
 	},
 	piano: {
 		f:  { key: 'piano/piano/09.mp3', volume: 1 },
@@ -615,6 +617,12 @@ const videos = {
 	// },
 }
 
+const binaries = {
+	looper: {
+		impulseresponse: { key: 'looper/impulse_response2.wav' },
+	},
+}
+
 
 const game: Up.Game = {
 
@@ -631,6 +639,7 @@ const game: Up.Game = {
 	soundsPersistant: soundsPersistant,
 	sounds: sounds,
 	videos: videos,
+	binaries: binaries,
 }
 
 // function getState (): State {

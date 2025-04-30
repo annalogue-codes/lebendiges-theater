@@ -16,7 +16,7 @@
 import Phaser from 'phaser'
 
 import { game, w, h, s } from '../constants'
-import { debug } from '../utils/general'
+import { debug, log } from '../utils/general'
 import { addExit } from '../utils/phaser/exit'
 
 import * as Up from '../utils/phaser/common'
@@ -43,7 +43,9 @@ export default class Fassade extends Phaser.Scene {
 
 	create() {
 
-		this.events.once( Up.ASSETSLOADED, () => { go( this ) } )
+		this.events.once( Up.ASSETSLOADED, () => {
+			go( this )
+		})
 		Up.assets.load({ game: game, scene: this })
 	}
 
@@ -100,6 +102,7 @@ function go ( scene: Phaser.Scene ): void {
 		blendMode: 'ADD',
 	}).setDepth( 9 )
 
+	log(`${scene.scene.key} created.`)
 	// EXITS
 	// door
 	const entrance = scene.add.rectangle( 0.617 * w, 0.80 * h, 0.2 * h, 0.15 * h, 0x553366)
@@ -131,6 +134,8 @@ function go ( scene: Phaser.Scene ): void {
 			exit: wimmelbild,
 		})
 	}
+
+	log(`${scene.scene.key} created.`)
 }
 
 function addDoors ( scene: Phaser.Scene ): void {
