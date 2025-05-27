@@ -71,7 +71,7 @@ function go ( scene: Phaser.Scene ): void {
 
 	const buehne = Audio.get({ scene, keyAndVolume: game.sounds.entrance.womanbuehne })
 	const welcome = Audio.get({ scene, keyAndVolume: game.sounds.entrance.womaninposter })
-	const foundKnife = Audio.get({ scene, keyAndVolume: game.sounds.entrance.womanknife })
+	// const foundKnife = Audio.get({ scene, keyAndVolume: game.sounds.entrance.womanknife })
 
 	let speech = welcome
 	let speechTimer: Phaser.Time.TimerEvent
@@ -122,18 +122,18 @@ function go ( scene: Phaser.Scene ): void {
 		resetWoman()
 	}
 
-	// Stray items
-	if ( game.state.get().arrivedAtWimmelbild && !game.state.get().inventory.includes('knife') ) {
-		const chest = Inventory.createChest({ game, scene })
-
-		const knife = scene.add.image( 60 * s, 370 * s, game.images.entrance.knife.key ).setInteractive().setDepth( 100 ).setAngle( -20 ).setScale( 1.3 )
-		knife.off('pointerup').once( 'pointerup', () => {
-			speech.sound.stop()
-			woman.off( Phaser.Input.Events.POINTER_UP )
-			chest.foundItem({ item: 'knife', image: knife })
-			womanSpeak({ woman: woman, soundAndVolume: foundKnife, delay: 2000 })
-		})
-	}
+	// // Stray items
+	// if ( game.state.get().arrivedAtWimmelbild && !game.state.get().inventory.includes('knife') ) {
+	// 	const chest = Inventory.createChest({ game, scene })
+	//
+	// 	const knife = scene.add.image( 60 * s, 370 * s, game.images.entrance.knife.key ).setInteractive().setDepth( 100 ).setAngle( -20 ).setScale( 1.3 )
+	// 	knife.off('pointerup').once( 'pointerup', () => {
+	// 		speech.sound.stop()
+	// 		woman.off( Phaser.Input.Events.POINTER_UP )
+	// 		chest.foundItem({ item: 'knife', image: knife })
+	// 		womanSpeak({ woman: woman, soundAndVolume: foundKnife, delay: 2000 })
+	// 	})
+	// }
 
 	// Objects
 
